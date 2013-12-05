@@ -13,6 +13,7 @@ module.exports = (grunt) ->
   # tasks
   ###
   grunt.registerTask 'test', [ 'mochacli' ]
+  grunt.registerTask 'build', [ 'clean', 'coffee', 'test', 'wrap', 'uglify' ]
 
   ###
   # config
@@ -22,6 +23,13 @@ module.exports = (grunt) ->
     # Clean the lib folder
     clean:
       lib : [ LIB_PATH ]
+
+    wrap :
+      production:
+        src     : "#{LIB_PATH}/src/zimple.js"
+        dest    : 'zimple.js'
+        options :
+          wrapper : ['(function(global, undefined) {', '})(this);']
 
     coffee:
       build :
@@ -35,6 +43,14 @@ module.exports = (grunt) ->
         expand  : true
         rename  : (dest, src) ->
           "#{dest}/" + src.replace /\.coffee$/, '.js'
+
+    uglify :
+      build:
+        options:
+          report :'gzip'
+        files  :
+          'zimple.min.js' : [ 'zimple.js' ]
+
 
     # For testing we run all the plugin tests
     # and all the standalone tests

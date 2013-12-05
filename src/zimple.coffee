@@ -1,8 +1,6 @@
-root = @
-
 # Create the Z class
 class Z
-  constructor: (context = root) ->
+  constructor: (context = global) ->
     return new Z context unless @ instanceof Z
     @_context = context
 
@@ -46,4 +44,4 @@ if module?.exports
 else if typeof define is 'function' and typeof define?.amd
   define -> Z
 else
-  root.Z = Z
+  global.Z = Z
