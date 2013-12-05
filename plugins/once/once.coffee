@@ -3,7 +3,6 @@
 #
 # throws if no function is defined
 Z.fn 'once', (fn, context) ->
-  console.log fn
   throw new Error 'No function defined' if typeof fn isnt 'function'
 
   called   = false

@@ -7,7 +7,8 @@ describe 'once plugin', ->
     Z.once.should.be.ok
 
   it 'should throw if no function is defined', ->
-    (-> Z.once()).should.throw 'No function defined'
+    (-> Z.once []).should.throw 'No function defined'
+    (-> Z().once()).should.throw 'No function defined'
 
   it 'should return a function', ->
     fn = Z.once ->

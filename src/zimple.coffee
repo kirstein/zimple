@@ -2,7 +2,7 @@ root = @
 
 # Create the Z class
 class Z
-  constructor: (context) ->
+  constructor: (context = root) ->
     return new Z context unless @ instanceof Z
     @_context = context
 
