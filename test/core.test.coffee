@@ -95,4 +95,12 @@ describe 'zimple core', ->
         Z().trigger().should.eql 'beep'
         Z.trigger().should.eql 'beep'
 
+      it 'should not pass extra params to arguments', ->
+        Z.fn 'paramguard', (context, args) ->
+          throw new Error "did not expect any args #{args}" if args
+
+        Z().paramguard()
+        Z.paramguard()
+
+
 

@@ -28,7 +28,7 @@ Z = (function() {
       if (this instanceof Z) {
         return fn.apply(this, [this._context].concat(args));
       } else {
-        return Z[name](this, args);
+        return Z[name].apply(this, args);
       }
     };
     return Z[name] = function() {
@@ -60,48 +60,32 @@ var Chain,
   __slice = [].slice;
 
 Chain = (function() {
-  function Chain(_context, _arg) {
+  function Chain(_context) {
     this._context = _context;
-    this.async = _arg.async;
-    if (this.async == null) {
-      this.async = true;
-    }
+    this._initial = this._context;
+    this._links = [];
   }
 
   Chain.prototype.result = function() {
-    var link, _i, _len, _ref;
-    if (this.async) {
-      _ref = this._links;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        this._context = link();
-      }
+    var link, ret, _i, _len, _ref;
+    _ref = this._links;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      link = _ref[_i];
+      ret = this._context = link();
     }
-    return this._context;
+    this._context = this._initial;
+    return ret;
   };
 
   Chain.prototype._isValidMethodName = function(name) {
     return name.charAt(0) !== '_' && (Chain.prototype[name] == null);
   };
 
-  Chain.prototype._linkSync = function(func) {
+  Chain.prototype._link = function(func) {
     var _this = this;
     return function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      _this._context = func.apply(_this._context, [_this._context].concat(args));
-      return _this;
-    };
-  };
-
-  Chain.prototype._linkAsync = function(func) {
-    var _this = this;
-    return function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      if (_this._links == null) {
-        _this._links = [];
-      }
       _this._links.push(function() {
         return func.apply(_this._context, [_this._context].concat(args));
       });
@@ -109,24 +93,13 @@ Chain = (function() {
     };
   };
 
-  Chain.prototype._link = function(func) {
-    if (!this.async) {
-      return this._linkSync(func);
-    } else {
-      return this._linkAsync(func);
-    }
-  };
-
   return Chain;
 
 })();
 
-Z.fn('chain', function(context, options) {
+Z.fn('chain', function(context) {
   var chain, func, name, _ref;
-  if (options == null) {
-    options = {};
-  }
-  chain = new Chain(context, options);
+  chain = new Chain(context);
   _ref = Z.prototype;
   for (name in _ref) {
     func = _ref[name];

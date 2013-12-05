@@ -23,8 +23,17 @@ describe 'chain plugin', ->
     assert Z.chain('one')._testFn == undefined
     Z::_testFn = undefined
 
+  it 'should pass arguments', ->
+    Z.fn 'argguard', (context, arg) ->
+      throw new Error "Invalid argument passed" if arg != 'wat'
+
+    Z().chain().argguard('wat').result()
+    Z.chain().argguard('wat').result()
+
   it 'should pass the correct context', ->
-    Z.fn 'call', (context) -> context()
+    Z.fn 'call', (context, arg) ->
+      throw new Error "Invalid argument passed: #{arg}" if arg
+      context()
 
     spy = sinon.spy()
     Z(spy).chain().call().result()
@@ -34,31 +43,27 @@ describe 'chain plugin', ->
     Z.chain(spy).call().result()
     spy.called.should.be.ok
 
-  describe 'linking (sync)', ->
+  describe 'mutations', ->
     beforeEach ->
-      Z.fn 'uppercase', (context) -> context.toUpperCase()
-      Z.fn 'reverse',   (context) -> context.split('').reverse().join('')
+      Z.fn 'removeFirst', (arr) -> arr.slice 1
+      Z.fn 'sum', (arr) -> arr.reduce (old, val) -> old+val
+      Z.fn 'double', (val) -> val * 2
 
-    it 'should receive the value after chaining', ->
-      Z('one').chain(async : false).reverse().result().should.eql 'eno'
-      Z.chain('one', async : false).reverse().result().should.eql 'eno'
+    it 'should receive the same result each time (PARTIAL)', ->
+      chain = Z.chain([2,5,6,82]).removeFirst().sum().double()
 
-    it 'should receive the value after chaining (MULTIPLE LINKS)', ->
-      Z('one').chain(async : false).reverse().uppercase().result().should.eql 'ENO'
-      Z.chain('one', async : false).reverse().uppercase().result().should.eql 'ENO'
+      chain.result().should.eql 186
+      chain.result().should.eql 186
+      chain.result().should.eql 186
 
-    it 'should call the function straight away', ->
-      spy = sinon.spy()
-      Z.fn 'test', spy
-      Z('one').chain( async : false ).test()
-      spy.called.should.be.ok
+    it 'should receive the same result each time (FULL)', ->
+      chain = Z([2,5,6,82]).chain().removeFirst().sum().double()
 
-      spy = sinon.spy()
-      Z.fn 'test', spy
-      Z.chain('one', async : false).test( )
-      spy.called.should.be.ok
+      chain.result().should.eql 186
+      chain.result().should.eql 186
+      chain.result().should.eql 186
 
-  describe 'linking (async)', ->
+  describe 'linking', ->
     beforeEach ->
       Z.fn 'uppercase', (context) -> context.toUpperCase()
       Z.fn 'reverse',   (context) -> context.split('').reverse().join('')
@@ -90,12 +95,3 @@ describe 'chain plugin', ->
 
       spy.called.should.be.not.ok
       spy2.called.should.be.not.ok
-
-
-
-
-
-
-
-
-

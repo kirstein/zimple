@@ -1,40 +1,32 @@
 class Chain
-  constructor : (@_context, { @async }) ->
-    @async ?= true
+  constructor : (@_context) ->
+    @_initial = @_context
+    @_links   = []
 
   # Return the result
   result : ->
-    if @async
-      @_context = link() for link in @_links
-    @_context
+    ret = @_context = link() for link in @_links
+    @_context = @_initial
+    ret
 
+  # Validate the method name
+  # Do not allow methods that begin with _
+  # or are the methods of Chain prototype
   _isValidMethodName : (name) ->
     name.charAt(0) isnt '_' and not Chain::[name]?
 
-  _linkSync : (func) ->
+  # Return the link closure
+  # Builds a closure that encapsulates the target function.
+  #
+  # All function calls will push the chain link to a list
+  # on result it will replay all the values and call the real functions.
+  _link : (func) ->
     (args...) =>
-      @_context = func.apply @_context, [ @_context ].concat args
-      @
-
-  _linkAsync : (func) ->
-    (args...) =>
-      @_links ?= []
       @_links.push => func.apply @_context, [ @_context ].concat args
       @
 
-  _link : (func) ->
-    unless @async
-      @_linkSync func
-    else
-      @_linkAsync func
-
-
-Z.fn 'chain', (context, options = {}) ->
-  chain = new Chain context, options
+Z.fn 'chain', (context) ->
+  chain = new Chain context
   for name, func of Z::
     chain[name] = chain._link func if chain._isValidMethodName name
-
   chain
-
-
-

@@ -14,6 +14,7 @@ module.exports = (grunt) ->
   ###
   grunt.registerTask 'test', [ 'mochacli' ]
   grunt.registerTask 'build', [ 'clean', 'coffee', 'test', 'wrap', 'uglify' ]
+  grunt.registerTask 'default', [ 'build' ]
 
   ###
   # config
@@ -57,7 +58,7 @@ module.exports = (grunt) ->
     mochacli:
       all : [ "#{LIB_PATH}/**/*.test.js" ]
       options :
-        bail     : true
+        #bail     : true
         require  : [ 'should' ]
         growl    : true
         reporter : 'spec'

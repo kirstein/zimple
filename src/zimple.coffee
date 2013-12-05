@@ -28,7 +28,7 @@ class Z
         fn.apply @, [ @_context ].concat args
 
       else
-        Z[name] @, args
+        Z[name].apply @, args
 
     # If we are dealing with syntax like Z.<cmd> then we must wrap it
     # in order to get the right context.
