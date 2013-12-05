@@ -89,7 +89,7 @@ Chain = (function() {
     return function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      _this._context = func.apply(_this._context, args);
+      _this._context = func.apply(_this._context, [_this._context].concat(args));
       return _this;
     };
   };
@@ -103,7 +103,7 @@ Chain = (function() {
         _this._links = [];
       }
       _this._links.push(function() {
-        return func.apply(_this._context, args);
+        return func.apply(_this._context, [_this._context].concat(args));
       });
       return _this;
     };

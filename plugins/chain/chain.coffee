@@ -13,13 +13,13 @@ class Chain
 
   _linkSync : (func) ->
     (args...) =>
-      @_context = func.apply @_context, args
+      @_context = func.apply @_context, [ @_context ].concat args
       @
 
   _linkAsync : (func) ->
     (args...) =>
       @_links ?= []
-      @_links.push => func.apply @_context, args
+      @_links.push => func.apply @_context, [ @_context ].concat args
       @
 
   _link : (func) ->

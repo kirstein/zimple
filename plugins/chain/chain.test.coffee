@@ -23,6 +23,17 @@ describe 'chain plugin', ->
     assert Z.chain('one')._testFn == undefined
     Z::_testFn = undefined
 
+  it 'should pass the correct context', ->
+    Z.fn 'call', (context) -> context()
+
+    spy = sinon.spy()
+    Z(spy).chain().call().result()
+    spy.called.should.be.ok
+
+    spy = sinon.spy()
+    Z.chain(spy).call().result()
+    spy.called.should.be.ok
+
   describe 'linking (sync)', ->
     beforeEach ->
       Z.fn 'uppercase', (context) -> context.toUpperCase()
