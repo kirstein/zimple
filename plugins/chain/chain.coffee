@@ -1,13 +1,12 @@
 class Chain
-  constructor : (@_context) ->
-    @_initial = @_context
+  constructor : (@_root) ->
     @_links   = []
 
   # Return the result
   result : ->
-    ret = @_context = link() for link in @_links
-    @_context = @_initial
-    ret
+    context = @_root._context
+    context = link context for link in @_links
+    context
 
   # Validate the method name
   # Do not allow methods that begin with _
@@ -21,12 +20,12 @@ class Chain
   # All function calls will push the chain link to a list
   # on result it will replay all the values and call the real functions.
   _link : (func) ->
-    (args...) =>
-      @_links.push => func.apply @_context, [ @_context ].concat args
+    (args...) ->
+      @_links.push (context) -> func.apply context, [ context ].concat args
       @
 
 Z.fn 'chain', (context) ->
-  chain = new Chain context
+  chain = new Chain @
   for name, func of Z::
     chain[name] = chain._link func if chain._isValidMethodName name
   chain

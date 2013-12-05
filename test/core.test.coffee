@@ -25,8 +25,7 @@ describe 'zimple core', ->
         ).should.throw 'No plugin name defined'
 
       it 'should handle the same way with initiation and without', ->
-        Z.fn 'sum', (arr) ->
-          arr.reduce (old, val) -> old + val
+        Z.fn 'sum', (arr) -> arr.reduce (old, val) -> old + val
 
         Z([1,2,3]).sum().should.eql(6)
         Z.sum([1,2,3]).should.eql(6)
@@ -56,18 +55,12 @@ describe 'zimple core', ->
         Z.param.call('yolo').should.eql 'yolo'
 
       it 'should create chainable plugins (context change)', ->
-        Z.fn 'uppercase', (context) ->
-          context.toUpperCase()
-
-        Z.fn 'reverse', (context) ->
-          context.split('').reverse().join('')
-
-        Z.fn 'mutate', (context) ->
-          @uppercase.call @reverse.call context
+        Z.fn 'uppercase', (context) -> context.toUpperCase()
+        Z.fn 'reverse', (context) -> context.split('').reverse().join('')
+        Z.fn 'mutate', (context) -> @uppercase.call @reverse.call context
 
         Z('hello').mutate().should.eql 'OLLEH'
         Z.mutate('hello').should.eql 'OLLEH'
-
 
       it 'should create chainable plugins (argument)', ->
         Z.fn 'uppercase', (context, text) ->
@@ -83,14 +76,9 @@ describe 'zimple core', ->
         Z.mutate('hello').should.eql 'OLLEH'
 
       it 'should chain if context has changed', ->
-        Z.fn 'beep', ->
-          'beep'
-
-        Z.fn 'triggerbeep', ->
-          @beep()
-
-        Z.fn 'trigger', ->
-          @triggerbeep.call()
+        Z.fn 'beep', -> 'beep'
+        Z.fn 'triggerbeep', -> @beep()
+        Z.fn 'trigger', -> @triggerbeep.call()
 
         Z().trigger().should.eql 'beep'
         Z.trigger().should.eql 'beep'
@@ -101,6 +89,13 @@ describe 'zimple core', ->
 
         Z().paramguard()
         Z.paramguard()
+
+      it 'should not mutate the context object directly', ->
+        start = 0
+        Z.fn 'decrement', (context) -> --context
+        Z(start).decrement().should.eql -1
+        Z.decrement(start).should.eql -1
+        start.should.eql 0
 
 
 

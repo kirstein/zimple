@@ -58,7 +58,7 @@ module.exports = (grunt) ->
     mochacli:
       all : [ "#{LIB_PATH}/**/*.test.js" ]
       options :
-        #bail     : true
+        bail     : true
         require  : [ 'should' ]
         growl    : true
         reporter : 'spec'
@@ -71,7 +71,3 @@ module.exports = (grunt) ->
         tasks : [ 'clean', 'coffee', 'test' ]
         options :
           nospawn : true
-
-
-
-

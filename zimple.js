@@ -60,21 +60,20 @@ var Chain,
   __slice = [].slice;
 
 Chain = (function() {
-  function Chain(_context) {
-    this._context = _context;
-    this._initial = this._context;
+  function Chain(_root) {
+    this._root = _root;
     this._links = [];
   }
 
   Chain.prototype.result = function() {
-    var link, ret, _i, _len, _ref;
+    var context, link, _i, _len, _ref;
+    context = this._root._context;
     _ref = this._links;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       link = _ref[_i];
-      ret = this._context = link();
+      context = link(context);
     }
-    this._context = this._initial;
-    return ret;
+    return context;
   };
 
   Chain.prototype._isValidMethodName = function(name) {
@@ -82,14 +81,13 @@ Chain = (function() {
   };
 
   Chain.prototype._link = function(func) {
-    var _this = this;
     return function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      _this._links.push(function() {
-        return func.apply(_this._context, [_this._context].concat(args));
+      this._links.push(function(context) {
+        return func.apply(context, [context].concat(args));
       });
-      return _this;
+      return this;
     };
   };
 
@@ -99,7 +97,7 @@ Chain = (function() {
 
 Z.fn('chain', function(context) {
   var chain, func, name, _ref;
-  chain = new Chain(context);
+  chain = new Chain(this);
   _ref = Z.prototype;
   for (name in _ref) {
     func = _ref[name];
