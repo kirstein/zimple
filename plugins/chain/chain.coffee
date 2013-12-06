@@ -10,7 +10,7 @@ do (Z) ->
   # each chain member is wrapped in Chain wrapper
   class Chain
     constructor : (@_root) ->
-      @_links   = []
+      @_links = []
 
     # Trigger each link of the chain and returns a value
     value : ->

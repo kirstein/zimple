@@ -4,7 +4,7 @@
 # Will set property chaining to false
 # throws if no function is defined
 do (Z) ->
-  once = (fn, context) ->
+  onceFn = (fn, context) ->
     throw new Error 'No function defined' if typeof fn isnt 'function'
 
     called   = false
@@ -16,4 +16,4 @@ do (Z) ->
       response
 
   # Expose the plugin
-  Z.fn 'once', once , chain : false
+  Z.fn 'once', onceFn , __chain : false

@@ -10,6 +10,10 @@ describe 'once plugin', ->
     (-> Z.once []).should.throw 'No function defined'
     (-> Z().once()).should.throw 'No function defined'
 
+  it 'should not be chainable', ->
+    assert Z.chain().once   == undefined
+    assert Z().chain().once == undefined
+
   it 'should return a function', ->
     fn = Z.once ->
     fn.should.be.type 'function'

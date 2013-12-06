@@ -137,8 +137,42 @@ var __slice = [].slice;
 var __slice = [].slice;
 
 (function(Z) {
-  var once;
-  once = function(fn, context) {
+  var COUNT_REGEX, curryFn, getArgumentCount;
+  COUNT_REGEX = /\((.*)\)/;
+  curryFn = function() {
+    var args, count, curryWrapper, fn,
+      _this = this;
+    fn = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    if (typeof fn !== 'function') {
+      throw new Error('No function defined');
+    }
+    count = getArgumentCount(fn);
+    return curryWrapper = function() {
+      var partialargs;
+      partialargs = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      args = args.concat(partialargs);
+      if (count > args.length) {
+        return curryWrapper;
+      } else {
+        return fn.apply(_this, args);
+      }
+    };
+  };
+  getArgumentCount = function(fn) {
+    var args;
+    args = fn.toString().match(COUNT_REGEX);
+    return args[1].split(',').length;
+  };
+  return Z.fn('curry', curryFn, {
+    __chain: false
+  });
+})(Z);
+
+var __slice = [].slice;
+
+(function(Z) {
+  var onceFn;
+  onceFn = function(fn, context) {
     var called, response;
     if (typeof fn !== 'function') {
       throw new Error('No function defined');
@@ -155,8 +189,8 @@ var __slice = [].slice;
       return response;
     };
   };
-  return Z.fn('once', once, {
-    chain: false
+  return Z.fn('once', onceFn, {
+    __chain: false
   });
 })(Z);
 
