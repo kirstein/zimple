@@ -6,6 +6,14 @@ describe 'zimple #fn', ->
     Z.count.should.be.ok
     Z().count.should.be.ok
 
+  it 'should add options to the function if provided', ->
+    Z.fn 'zzz', ( -> ) , test: 123
+    Z().zzz.test.should.eql 123
+    Z.zzz.test.should.eql 123
+
+  it 'should be return Z after the function definition', ->
+    Z.fn('xxx', -> 'hello').should.eql Z
+
   describe 'throwing', ->
     it 'should throw if the given plugin has no function', ->
       (-> Z.fn 'sum').should.throw 'No function defined for plugin \'sum\''

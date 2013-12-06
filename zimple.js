@@ -3,7 +3,8 @@ var Z,
   __slice = [].slice;
 
 Z = (function() {
-  var _this = this;
+  var attachOptions, wrapPartial, wrapWraped,
+    _this = this;
 
   function Z(context) {
     if (context == null) {
@@ -15,14 +16,19 @@ Z = (function() {
     this._context = context;
   }
 
-  Z.fn = Z.prototype.fn = function(name, fn) {
-    if (name == null) {
-      throw new Error('No plugin name defined');
+  attachOptions = function(name, options) {
+    var key, value, _results;
+    _results = [];
+    for (key in options) {
+      value = options[key];
+      Z[name][key] = value;
+      _results.push(Z.prototype[name][key] = value);
     }
-    if (typeof fn !== 'function') {
-      throw new Error("No function defined for plugin '" + name + "'");
-    }
-    Z.prototype[name] = function() {
+    return _results;
+  };
+
+  wrapWraped = function(name, fn) {
+    return function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       if (this instanceof Z) {
@@ -31,7 +37,10 @@ Z = (function() {
         return Z[name].apply(this, args);
       }
     };
-    return Z[name] = function() {
+  };
+
+  wrapPartial = function(name) {
+    return function() {
       var args, context, instance;
       context = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       if (context == null) {
@@ -40,6 +49,22 @@ Z = (function() {
       instance = new Z(context);
       return instance[name].apply(instance, args);
     };
+  };
+
+  Z.fn = Z.prototype.fn = function(name, fn, options) {
+    if (options == null) {
+      options = {};
+    }
+    if (name == null) {
+      throw new Error('No plugin name defined');
+    }
+    if (typeof fn !== 'function') {
+      throw new Error("No function defined for plugin '" + name + "'");
+    }
+    Z.prototype[name] = wrapWraped(name, fn);
+    Z[name] = wrapPartial(name);
+    attachOptions(name, options);
+    return Z;
   };
 
   return Z;
@@ -56,76 +81,83 @@ if (typeof module !== "undefined" && module !== null ? module.exports : void 0) 
   global.Z = Z;
 }
 
-var Chain,
-  __slice = [].slice;
+var __slice = [].slice;
 
-Chain = (function() {
-  function Chain(_root) {
-    this._root = _root;
-    this._links = [];
-  }
-
-  Chain.prototype.result = function() {
-    var context, link, _i, _len, _ref;
-    context = this._root._context;
-    _ref = this._links;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      link = _ref[_i];
-      context = link(context);
+(function(Z) {
+  var Chain;
+  Chain = (function() {
+    function Chain(_root) {
+      this._root = _root;
+      this._links = [];
     }
-    return context;
-  };
 
-  Chain.prototype._isValidMethodName = function(name) {
-    return name.charAt(0) !== '_' && (Chain.prototype[name] == null);
-  };
-
-  Chain.prototype._link = function(func) {
-    return function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      this._links.push(function(context) {
-        return func.apply(context, [context].concat(args));
-      });
-      return this;
+    Chain.prototype.value = function() {
+      var context, link, _i, _len, _ref;
+      context = this._root._context;
+      _ref = this._links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        context = link(context);
+      }
+      return context;
     };
-  };
 
-  return Chain;
+    Chain.prototype._isChainable = function(name, fn) {
+      return typeof fn === 'function' && name.charAt(0) !== '_' && (Chain.prototype[name] == null) && fn.__chain !== false;
+    };
 
-})();
+    Chain.prototype._link = function(func) {
+      return function() {
+        var args;
+        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        this._links.push(function(context) {
+          return func.apply(context, [context].concat(args));
+        });
+        return this;
+      };
+    };
 
-Z.fn('chain', function(context) {
-  var chain, func, name, _ref;
-  chain = new Chain(this);
-  _ref = Z.prototype;
-  for (name in _ref) {
-    func = _ref[name];
-    if (chain._isValidMethodName(name)) {
-      chain[name] = chain._link(func);
+    return Chain;
+
+  })();
+  return Z.fn('chain', function(context) {
+    var chain, func, name, _ref;
+    chain = new Chain(this);
+    _ref = Z.prototype;
+    for (name in _ref) {
+      func = _ref[name];
+      if (chain._isChainable(name, func)) {
+        chain[name] = chain._link(func);
+      }
     }
-  }
-  return chain;
-});
+    return chain;
+  });
+})(Z);
 
 var __slice = [].slice;
 
-Z.fn('once', function(fn, context) {
-  var called, response;
-  if (typeof fn !== 'function') {
-    throw new Error('No function defined');
-  }
-  called = false;
-  response = null;
-  return function() {
-    var args;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    if (!called) {
-      called = true;
-      response = fn.apply(context, args);
+(function(Z) {
+  var once;
+  once = function(fn, context) {
+    var called, response;
+    if (typeof fn !== 'function') {
+      throw new Error('No function defined');
     }
-    return response;
+    called = false;
+    response = null;
+    return function() {
+      var args;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      if (!called) {
+        called = true;
+        response = fn.apply(context, args);
+      }
+      return response;
+    };
   };
-});
+  return Z.fn('once', once, {
+    chain: false
+  });
+})(Z);
 
 })(this);
