@@ -2,7 +2,7 @@
 class Z
   constructor: (context = global) ->
     return new Z context unless @ instanceof Z
-    @_context = context
+    @__context = context
 
   # Attaches options to a named function
   # of function members and function prototype
@@ -19,9 +19,9 @@ class Z
     (args...) ->
       # If this value happens to be a instance of Z
       # then this means that we don't have to worry about leakage
-      # we can safely call the function with the added _context
+      # we can safely call the function with the added __context
       if @ instanceof Z
-        fn.apply @, [ @_context ].concat args
+        fn.apply @, [ @__context ].concat args
       else
         Z[name].apply @, args
 

@@ -9,13 +9,13 @@ do (Z) ->
   # Chain wrapper class
   # each chain member is wrapped in Chain wrapper
   class Chain
-    constructor : (@_root) ->
-      @_links = []
+    constructor : (@__root) ->
+      @__links = []
 
     # Trigger each link of the chain and returns a value
     value : ->
-      context = @_root._context
-      context = link context for link in @_links
+      context = @__root.__context
+      context = link context for link in @__links
       context
 
     # Validate the method name and type
@@ -37,7 +37,7 @@ do (Z) ->
     # on result it will replay all the values and call the real functions.
     _link : (func) ->
       (args...) ->
-        @_links.push (context) -> func.apply context, [ context ].concat args
+        @__links.push (context) -> func.apply context, [ context ].concat args
         @
 
   # Expose the chain plugin
