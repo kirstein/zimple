@@ -51,10 +51,9 @@ Z = (function() {
       options: options
     };
     Z[name] = function() {
-      var args, context, instance;
+      var args, context;
       context = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      instance = new Z(context);
-      return instance[name].apply(instance, args);
+      return new Z(context)[name].apply(null, args);
     };
     return Z;
   };

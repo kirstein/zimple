@@ -20,8 +20,11 @@ class Z
     @__wrapper = true
     @_attachPlugins @__plugins
 
-  # Wrap a function in closure
-  # set __wrapper value as true
+  # Wrap a function in closure.
+  # Context of the returned function will always be `this` of the Z.prototype.
+  # The arguments of the wrapped function will have prepended this.__context value.
+  #
+  # The wrapper can be recognized by its __wrapper = true value
   _wrap : (fn) ->
     wrapper = (args...) => fn.apply @, [ @__context ].concat args
     wrapper.__wrapper = true
@@ -79,11 +82,9 @@ class Z
     Z::__plugins[name] = fn : fn, options : options
 
     # Add wrapper function so we can later on access the plugins by calling Z.<plugin name>
-    Z[name] = (context, args...) ->
-      instance = new Z context
-      instance[name].apply instance, args
+    Z[name] = (context, args...) -> new Z(context)[name].apply null, args
 
-    # Expose Z to make it chain able
+    # Expose Z to make it chain-able
     Z
 
 # Expose the Z module
