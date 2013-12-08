@@ -7,9 +7,8 @@ describe 'zimple #fn', ->
     Z().count.should.be.ok
 
   it 'should add options to the function if provided', ->
-    Z.fn 'zzz', ( -> ) , test: 123
-    Z().zzz.test.should.eql 123
-    Z.zzz.test.should.eql 123
+    Z.fn 'zzz', ( -> ) , __test: 123
+    Z::__plugins.zzz.options.__test.should.eql 123
 
   it 'should be return Z after the function definition', ->
     Z.fn('xxx', -> 'hello').should.eql Z
@@ -45,12 +44,6 @@ describe 'zimple #fn', ->
     Z().param.call('yolo').should.be.instanceOf Z
     Z.param.call('yolo').should.be.instanceOf Z
 
-  it 'should re-initiate Z and swap its context is the context is changed', ->
-    Z.fn 'param', (context) -> context
-
-    Z().param.call('yolo').should.eql 'yolo'
-    Z.param.call('yolo').should.eql 'yolo'
-
   it 'should not pass extra params to arguments', ->
     Z.fn 'paramguard', (context, args) -> throw new Error "did not expect any args #{args}" if args
 
@@ -65,4 +58,16 @@ describe 'zimple #fn', ->
     Z.decrement(start).should.eql -1
     start.should.eql 0
 
+  it 'should work with function references', ->
+    Z.fn 'decrement', (context) -> context - 1
+
+    dec = Z(123).decrement
+    dec().should.eql 122
+
+  it 'should not trigger any plugins unless they are called', ->
+    Z.fn 'throwy'  , -> throw new Error 'should not have been called me'
+    Z.fn 'throwy2' , -> throw new Error 'should not have been called me'
+    Z.fn 'easy', -> 'easy'
+
+    Z.easy().should.eql 'easy'
 

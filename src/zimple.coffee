@@ -1,57 +1,43 @@
 # Create the Z class
 class Z
-  constructor: (context = global) ->
+
+  # List of plugins to be added to Z on initiation
+  __plugins : {}
+
+  constructor: (context) ->
     return new Z context unless @ instanceof Z
-    @__context = context
+    @__context = context or null
+    @__wrapper = true
+    @_attachPlugins @__plugins
 
-  # Attaches options to a named function
-  # of function members and function prototype
-  attachOptions = (name, options) ->
-    for key, value of options
-      Z[name][key] = value
-      Z::[name][key] = value
+  # Wrap a function in closure
+  # set __wrapper value as true
+  _wrap : (fn) ->
+    wrapper = (args...) => fn.apply @, [ @__context ].concat args
+    wrapper.__wrapper = true
+    wrapper
 
-  # Wrap the wraped function syntax.
+  # Attach plugins to Z
+  # Wrap each plugin in closure and add them as Z members
   #
-  # if the `this` value of the called function happens to be Z then just directly call the function
-  # otherwise call the partial wrapper with the given context
-  wrapWraped = (name, fn) ->
-    (args...) ->
-      # If this value happens to be a instance of Z
-      # then this means that we don't have to worry about leakage
-      # we can safely call the function with the added __context
-      if @ instanceof Z
-        fn.apply @, [ @__context ].concat args
-      else
-        Z[name].apply @, args
+  # We wont add the plugins to Z prototype because that would gimp our ability to call functions by reference.
+  # Therefore we add all plugins as members.
+  _attachPlugins : (plugins) ->
+    @[name] = @_wrap plugin.fn for name, plugin of plugins
 
-  # Return the wrapper of a partial function
-  #
-  # The partial function will return a wrapped function (FUNCTIONCEPTION?!)
-  wrapPartial = (name) ->
-    (context = @, args...) ->
-      instance = new Z context
-      instance[name].apply instance, args
-
-  # Add plugin support
-  # Plugins can be added to `Zimple` by triggering the `#fn` function, passing the plugin name and fn.
-  # Plugins will be added to Z prototype and as a member of Z function.
-  #
-  # Mainly there are two ways to trigger plugins
-  #   1. Initiated Z:
-  #     Z(<context>).<plugin name>(<plugin arguments>)
-  #   2. partial:
-  #     Z.<plugin name>(<context>, <plugin arguments)
-  #
-  # All initiated plugins are initiated in the context of `Zimple` and can therefore directly trigger other plugins.
-  Z.fn = Z::fn = (name, fn, options = {}) =>
+  Z.fn = (name, fn, options = {}) ->
     throw new Error 'No plugin name defined'                   if not name?
     throw new Error "No function defined for plugin '#{name}'" if typeof fn isnt 'function'
 
-    Z::[name] = wrapWraped  name, fn
-    Z[name]   = wrapPartial name
+    # Attach the plugin to plugins list
+    Z::__plugins[name] = fn : fn, options : options
 
-    attachOptions name, options
+    # Add wrapper function so we can later on access the plugins by calling Z.<plugin name>
+    Z[name] = (context, args...) ->
+      instance = new Z context
+      instance[name].apply instance, args
+
+    # Expose Z to make it chainable
     Z
 
 # Expose the Z module

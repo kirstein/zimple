@@ -15,23 +15,15 @@ describe 'chain plugin', ->
       assert Z.chain('one')._testFn == undefined
       Z::_testFn = undefined
 
-    it 'should not link functions that have set __chain false property', ->
-      testLinkFn = ->
-      testLinkFn.__chain = false
-      Z::testLinkFn = testLinkFn
+    it 'should not link functions that have set chain false property', ->
+      Z.fn 'testLinkFn', (->), chain : false
       assert Z('one').chain().testLinkFn == undefined
       assert Z.chain('one').testLinkFn == undefined
-      Z::testLinkFn = undefined
 
     it 'should only chain functions', ->
       Z::something = 1
       assert Z('one').chain().something == undefined
       assert Z.chain('one').something == undefined
-
-  it 'should expose value after the chain has started', ->
-    assert Z.value == undefined
-    Z.chain('one').value.should.be.ok
-    Z('one').chain().value.should.be.ok
 
   it 'should expose value after the chain has started', ->
     assert Z.value == undefined

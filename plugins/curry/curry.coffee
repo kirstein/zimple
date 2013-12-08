@@ -2,7 +2,7 @@ do (Z) ->
   COUNT_REGEX = /\((.*)\)/
 
   curryFn = (fn, args...) ->
-    throw new Error 'No function defined' if typeof fn isnt 'function'
+    throw new Error 'Z.curry: No function defined' if typeof fn isnt 'function'
     count = getArgumentCount fn
 
     curryWrapper = (partialargs...) =>
@@ -18,4 +18,4 @@ do (Z) ->
     args[1].split(',').length
 
   # Expose the curry plugin
-  Z.fn 'curry', curryFn, __chain : false
+  Z.fn 'curry', curryFn, chain : false

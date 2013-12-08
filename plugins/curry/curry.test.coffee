@@ -12,8 +12,8 @@ describe 'curry plugin', ->
     assert Z().chain().curry == undefined
 
   it 'should throw when no function is passed', ->
-    (-> Z({}).curry()).should.throw 'No function defined'
-    (-> Z.curry({})).should.throw 'No function defined'
+    (-> Z({}).curry()).should.throw 'Z.curry: No function defined'
+    (-> Z.curry({})).should.throw 'Z.curry: No function defined'
 
   it 'should return a partial function', ->
     Z.curry(->).should.be.ok

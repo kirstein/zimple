@@ -25,10 +25,12 @@ do (Z) ->
     # Only allow functions whos name are not on `Chain` prototype
     # Only allow functions whos `__chain` value is not false
     _isChainable : (name, fn) ->
-      typeof fn is 'function' and
-      name.charAt(0) isnt '_' and
-      not Chain::[name]?      and
-      fn.__chain isnt false
+      options = Z::__plugins[name]?.options || {}
+
+      typeof fn is 'function'            and
+      name.charAt(0) isnt '_'            and
+      not Chain::[name]?                 and
+      options.chain isnt false
 
     # Return the link closure
     # Builds a closure that encapsulates the target function.
@@ -43,7 +45,7 @@ do (Z) ->
   # Expose the chain plugin
   Z.fn 'chain', (context) ->
     chain = new Chain @
-    # Wrap each member of Z prototype to `Chain`
-    for name, func of Z::
+    # Wrap each member of Z to `Chain`
+    for name, func of Z
       chain[name] = chain._link func if chain._isChainable name, func
     chain

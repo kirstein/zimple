@@ -7,8 +7,8 @@ describe 'once plugin', ->
     Z.once.should.be.ok
 
   it 'should throw if no function is defined', ->
-    (-> Z.once []).should.throw 'No function defined'
-    (-> Z().once()).should.throw 'No function defined'
+    (-> Z.once []).should.throw 'Z.once: No function defined'
+    (-> Z().once()).should.throw 'Z.once: No function defined'
 
   it 'should not be chainable', ->
     assert Z.chain().once   == undefined

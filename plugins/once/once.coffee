@@ -5,7 +5,7 @@
 # throws if no function is defined
 do (Z) ->
   onceFn = (fn, context) ->
-    throw new Error 'No function defined' if typeof fn isnt 'function'
+    throw new Error 'Z.once: No function defined' if typeof fn isnt 'function'
 
     called   = false
     response = null
@@ -16,4 +16,4 @@ do (Z) ->
       response
 
   # Expose the plugin
-  Z.fn 'once', onceFn , __chain : false
+  Z.fn 'once', onceFn , chain : false
