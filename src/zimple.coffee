@@ -17,26 +17,19 @@ class Z
   constructor: (context) ->
     return new Z context unless @ instanceof Z
     @__context = context or null
-    @__wrapper = true
     @_attachPlugins @__plugins
-
-  # Wrap a function in closure.
-  # Context of the returned function will always be `this` of the Z.prototype.
-  # The arguments of the wrapped function will have prepended this.__context value.
-  #
-  # The wrapper can be recognized by its __wrapper = true value
-  _wrap : (fn) ->
-    wrapper = (args...) => fn.apply @, [ @__context ].concat args
-    wrapper.__wrapper = true
-    wrapper
 
   # Attach plugins to Z
   # Wrap each plugin in closure and add them as Z members
   #
   # We wont add the plugins to Z prototype because that would gimp our ability to call functions by reference.
   # Therefore we add all plugins as members.
+  #
+  # When plugin is called then the result will be ZWrapper type
   _attachPlugins : (plugins) ->
-    @[name] = @_wrap plugin.fn for name, plugin of plugins
+    for name, plugin of plugins
+      wrapper = new ZWrapper @__context, plugin.fn
+      @[name] = wrapper._fn
 
   # Register Z plugin
   #
@@ -46,34 +39,8 @@ class Z
   #   Z(<context>).<plugin name>(<arguments...>)
   #
   # Plugins will be added as MEMBERS of Z class.
-  # Plugins wont be added to prototype chain.
-  #
-  # Plugin options will be added to Z.prototype.__plugins[<plugin name>].options
-  # They will be only used by other plugins. Not by Z itself.
-  #
-  # Chaining of plugins works two ways:
-  #
-  #   1. Call the plugin directly from other plugin.
-  #      With this case the called plugins context wont mutate.
-  #
-  #    Z.fn('sum', function(context, val) {
-  #      return context + val;
-  #    });
-  #
-  #    Z.fn('addOne', function(context) {
-  #      this.sum(1);
-  #    });
-  #
-  #  2. Start a new Z chain
-  #
-  #    Z.fn('sum', function(context, val) {
-  #      return context + val;
-  #    });
-  #
-  #    Z.fn('addOne', function(context) {
-  #      Z.sum(context, 1);
-  #    });
-  #
+  # Plugins wont be added to prototype chain of Z class.
+  # Plugins WILL be added to ZWrapper prototype class.
   Z.fn = (name, fn, options = {}) ->
     throw new Error 'No plugin name defined'                   if not name?
     throw new Error "No function defined for plugin '#{name}'" if typeof fn isnt 'function'
@@ -82,10 +49,22 @@ class Z
     Z::__plugins[name] = fn : fn, options : options
 
     # Add wrapper function so we can later on access the plugins by calling Z.<plugin name>
-    Z[name] = (context, args...) -> new Z(context)[name].apply null, args
+    # ZWrapper prototype takes care of the direct this.<plugin name> calls in plugins allowing it to change the context
+    ZWrapper::[name] = Z[name] = (context, args...) ->
+      instance = new Z(context)
+      instance[name].apply instance, args
 
     # Expose Z to make it chain-able
     Z
+
+# Wrapper class for Z plugins
+# Each plugin will be called with this wrapper.
+#
+# This is necessary for direct `this` access in plugins.
+# When the wrapper functions are called it will modify the context of Z
+class ZWrapper extends Z
+  constructor : (@__context, @__fn) -> @__wrapper = true
+  _fn         : (args...) => @__fn.apply @, [ @__context ].concat args
 
 # Expose the Z module
 if module?.exports

@@ -102,3 +102,19 @@ describe 'chain plugin', ->
 
       spy.called.should.be.not.ok
       spy2.called.should.be.not.ok
+
+    it 'should work with generic Z chains', ->
+      Z.fn 'reduce', (arr, fn) -> arr.reduce fn
+      Z.fn 'summarize', (a, b) -> a + b
+      Z.fn 'sum', (arr) -> Z.reduce arr, Z.summarize
+
+      Z([2,5,6]).chain().sum().value().should.eql 13
+      Z.chain([2,5,6]).sum().value().should.eql 13
+
+    it 'should work with generic Z chains (this usage)', ->
+      Z.fn 'reduce', (arr, fn) -> arr.reduce fn
+      Z.fn 'summarize', (a, b) -> a + b
+      Z.fn 'sum', (arr) -> this.reduce arr, this.summarize
+
+      Z([2,5,6]).chain().sum().value().should.eql 13
+      Z.chain([2,5,6]).sum().value().should.eql 13

@@ -9,11 +9,3 @@ describe 'zimple core', ->
     # For mock sake lets remove all plugins
     Z::__plugins = {}
     new Z().should.eql Z()
-
-  it 'should not create a new instance of Z on each call', ->
-    Z.fn 'test', -> @
-    z = new Z()
-    assert z.test() == z
-
-    z = Z()
-    assert z.test().test() == z

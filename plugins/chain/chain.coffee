@@ -20,16 +20,17 @@ do (Z) ->
 
     # Validate the method name and type
     #
-    # Only make functions chainable
+    # Only make functions that are members of @root chainable
     # Only allow functions with name begin with _
     # Only allow functions whos name are not on `Chain` prototype
     # Only allow plugins whos `chain` options is not false
-    _isChainable : (name, fn) ->
-      options = Z::__plugins[name]?.options || {}
+    _isChainable : (name) ->
+      # Fetch options from the root
+      options = @__root.__plugins[name]?.options || {}
 
-      typeof fn is 'function' and
-      name.charAt(0) isnt '_' and
-      not Chain::[name]?      and
+      typeof @__root[name] is 'function' and
+      name.charAt(0) isnt '_'            and
+      not Chain::[name]?                 and
       options.chain isnt false
 
     # Return the link closure
@@ -39,13 +40,13 @@ do (Z) ->
     # on result it will replay all the values and call the real functions.
     _link : (func) ->
       (args...) ->
-        @__links.push (context) -> func.apply context, [ context ].concat args
+        @__links.push (context) -> func.apply @__root, [ context ].concat args
         @
 
   # Expose the chain plugin
   Z.fn 'chain', (context) ->
     chain = new Chain @
     # Wrap each member of Z to `Chain`
-    for name, func of Z
-      chain[name] = chain._link func if chain._isChainable name, func
+    for name, func of @
+      chain[name] = chain._link func if chain._isChainable name
     chain

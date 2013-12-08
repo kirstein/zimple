@@ -1,6 +1,9 @@
 (function(global, undefined) {
-var Z,
-  __slice = [].slice;
+var Z, ZWrapper,
+  __slice = [].slice,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Z = (function() {
   Z.prototype.__plugins = {};
@@ -10,28 +13,16 @@ Z = (function() {
       return new Z(context);
     }
     this.__context = context || null;
-    this.__wrapper = true;
     this._attachPlugins(this.__plugins);
   }
 
-  Z.prototype._wrap = function(fn) {
-    var wrapper,
-      _this = this;
-    wrapper = function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return fn.apply(_this, [_this.__context].concat(args));
-    };
-    wrapper.__wrapper = true;
-    return wrapper;
-  };
-
   Z.prototype._attachPlugins = function(plugins) {
-    var name, plugin, _results;
+    var name, plugin, wrapper, _results;
     _results = [];
     for (name in plugins) {
       plugin = plugins[name];
-      _results.push(this[name] = this._wrap(plugin.fn));
+      wrapper = new ZWrapper(this.__context, plugin.fn);
+      _results.push(this[name] = wrapper._fn);
     }
     return _results;
   };
@@ -50,10 +41,11 @@ Z = (function() {
       fn: fn,
       options: options
     };
-    Z[name] = function() {
-      var args, context;
+    ZWrapper.prototype[name] = Z[name] = function() {
+      var args, context, instance;
       context = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      return new Z(context)[name].apply(null, args);
+      instance = new Z(context);
+      return instance[name].apply(instance, args);
     };
     return Z;
   };
@@ -61,6 +53,26 @@ Z = (function() {
   return Z;
 
 })();
+
+ZWrapper = (function(_super) {
+  __extends(ZWrapper, _super);
+
+  function ZWrapper(__context, __fn) {
+    this.__context = __context;
+    this.__fn = __fn;
+    this._fn = __bind(this._fn, this);
+    this.__wrapper = true;
+  }
+
+  ZWrapper.prototype._fn = function() {
+    var args;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    return this.__fn.apply(this, [this.__context].concat(args));
+  };
+
+  return ZWrapper;
+
+})(Z);
 
 if (typeof module !== "undefined" && module !== null ? module.exports : void 0) {
   module.exports = Z;
@@ -93,10 +105,10 @@ var __slice = [].slice;
       return context;
     };
 
-    Chain.prototype._isChainable = function(name, fn) {
+    Chain.prototype._isChainable = function(name) {
       var options, _ref;
-      options = ((_ref = Z.prototype.__plugins[name]) != null ? _ref.options : void 0) || {};
-      return typeof fn === 'function' && name.charAt(0) !== '_' && (Chain.prototype[name] == null) && options.chain !== false;
+      options = ((_ref = this.__root.__plugins[name]) != null ? _ref.options : void 0) || {};
+      return typeof this.__root[name] === 'function' && name.charAt(0) !== '_' && (Chain.prototype[name] == null) && options.chain !== false;
     };
 
     Chain.prototype._link = function(func) {
@@ -104,7 +116,7 @@ var __slice = [].slice;
         var args;
         args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
         this.__links.push(function(context) {
-          return func.apply(context, [context].concat(args));
+          return func.apply(this.__root, [context].concat(args));
         });
         return this;
       };
@@ -116,9 +128,9 @@ var __slice = [].slice;
   return Z.fn('chain', function(context) {
     var chain, func, name;
     chain = new Chain(this);
-    for (name in Z) {
-      func = Z[name];
-      if (chain._isChainable(name, func)) {
+    for (name in this) {
+      func = this[name];
+      if (chain._isChainable(name)) {
         chain[name] = chain._link(func);
       }
     }
