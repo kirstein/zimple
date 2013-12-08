@@ -13,7 +13,7 @@ Z = (function() {
     if (!(this instanceof Z)) {
       return new Z(context);
     }
-    this._context = context;
+    this.__context = context;
   }
 
   attachOptions = function(name, options) {
@@ -32,7 +32,7 @@ Z = (function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       if (this instanceof Z) {
-        return fn.apply(this, [this._context].concat(args));
+        return fn.apply(this, [this.__context].concat(args));
       } else {
         return Z[name].apply(this, args);
       }
@@ -86,15 +86,15 @@ var __slice = [].slice;
 (function(Z) {
   var Chain;
   Chain = (function() {
-    function Chain(_root) {
-      this._root = _root;
-      this._links = [];
+    function Chain(__root) {
+      this.__root = __root;
+      this.__links = [];
     }
 
     Chain.prototype.value = function() {
       var context, link, _i, _len, _ref;
-      context = this._root._context;
-      _ref = this._links;
+      context = this.__root.__context;
+      _ref = this.__links;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         context = link(context);
@@ -110,7 +110,7 @@ var __slice = [].slice;
       return function() {
         var args;
         args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        this._links.push(function(context) {
+        this.__links.push(function(context) {
           return func.apply(context, [context].concat(args));
         });
         return this;
