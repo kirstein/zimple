@@ -23,13 +23,13 @@ do (Z) ->
     # Only make functions chainable
     # Only allow functions with name begin with _
     # Only allow functions whos name are not on `Chain` prototype
-    # Only allow functions whos `__chain` value is not false
+    # Only allow plugins whos `chain` options is not false
     _isChainable : (name, fn) ->
       options = Z::__plugins[name]?.options || {}
 
-      typeof fn is 'function'            and
-      name.charAt(0) isnt '_'            and
-      not Chain::[name]?                 and
+      typeof fn is 'function' and
+      name.charAt(0) isnt '_' and
+      not Chain::[name]?      and
       options.chain isnt false
 
     # Return the link closure
