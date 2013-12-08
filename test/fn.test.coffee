@@ -6,6 +6,12 @@ describe 'zimple #fn', ->
     Z.count.should.be.ok
     Z().count.should.be.ok
 
+  it 'should be able to redefine plugin', ->
+    Z.fn 'zzz', -> 'tere'
+    Z.zzz().should.eql 'tere'
+    Z.fn 'zzz', -> 'bye'
+    Z.zzz().should.eql 'bye'
+
   it 'should add options to the function if provided', ->
     Z.fn 'zzz', ( -> ) , __test: 123
     Z::__plugins.zzz.options.__test.should.eql 123

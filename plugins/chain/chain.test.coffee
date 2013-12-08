@@ -114,7 +114,7 @@ describe 'chain plugin', ->
     it 'should work with generic Z chains (this usage)', ->
       Z.fn 'reduce', (arr, fn) -> arr.reduce fn
       Z.fn 'summarize', (a, b) -> a + b
-      Z.fn 'sum', (arr) -> this.reduce arr, this.summarize
+      Z.fn 'sum', (arr) -> @reduce arr, @summarize
 
       Z([2,5,6]).chain().sum().value().should.eql 13
       Z.chain([2,5,6]).sum().value().should.eql 13

@@ -2,7 +2,6 @@ Z      = require '../../src/zimple'
 assert = require 'assert'
 
 describe 'curry plugin', ->
-
   it 'should be defined', ->
     Z.curry.should.be.ok
     Z().curry.should.be.ok
@@ -43,5 +42,11 @@ describe 'curry plugin', ->
     Z(calc).curry(1, 2)(3).should.eql 6
     Z(calc).curry(1)(2, 3).should.eql 6
 
+  it 'should work with Z plugins', ->
+    Z.fn 'sum',    (x, y) -> x * y
+    Z.fn 'double', (arr)  ->
+      curried = @curry @sum
+      arr.map (arg) => curried arg
 
+    Z([2, 4]).double().should.eql [4, 8]
 

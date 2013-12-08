@@ -47,4 +47,3 @@ describe 'zimple #fn chaining', ->
 
     Z(org).doubleList().should.eql [ 2, 4, 6 ]
     org.should.eql [ 1, 2, 3 ]
-

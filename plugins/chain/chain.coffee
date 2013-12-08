@@ -40,7 +40,7 @@ do (Z) ->
     # on result it will replay all the values and call the real functions.
     _link : (func) ->
       (args...) ->
-        @__links.push (context) -> func.apply @__root, [ context ].concat args
+        @__links.push (context) -> func.apply Z, [ context ].concat args
         @
 
   # Expose the chain plugin

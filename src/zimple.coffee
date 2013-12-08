@@ -27,9 +27,7 @@ class Z
   #
   # When plugin is called then the result will be ZWrapper type
   _attachPlugins : (plugins) ->
-    for name, plugin of plugins
-      wrapper = new ZWrapper @__context, plugin.fn
-      @[name] = wrapper._fn
+    @[name] = ZWrapper @__context, plugin.fn for name, plugin of plugins
 
   # Register Z plugin
   #
@@ -50,9 +48,11 @@ class Z
 
     # Add wrapper function so we can later on access the plugins by calling Z.<plugin name>
     # ZWrapper prototype takes care of the direct this.<plugin name> calls in plugins allowing it to change the context
-    ZWrapper::[name] = Z[name] = (context, args...) ->
+    Z[name] = (context, args...) ->
       instance = new Z(context)
       instance[name].apply instance, args
+
+    ZWrapper::[name] = fn
 
     # Expose Z to make it chain-able
     Z
@@ -63,8 +63,12 @@ class Z
 # This is necessary for direct `this` access in plugins.
 # When the wrapper functions are called it will modify the context of Z
 class ZWrapper extends Z
-  constructor : (@__context, @__fn) -> @__wrapper = true
-  _fn         : (args...) => @__fn.apply @, [ @__context ].concat args
+  constructor : (context, fn) ->
+    return new ZWrapper context, fn unless @ instanceof ZWrapper
+    @__wrapper = true
+    @__context = context
+    @__fn      = fn
+    return (args...) => fn.apply @, [ context].concat args
 
 # Expose the Z module
 if module?.exports
