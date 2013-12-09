@@ -1,4 +1,4 @@
-# Zimple [![Build Status](https://travis-ci.org/kirstein/zimple.png)](https://travis-ci.org/kirstein/zimple)
+# Zimple [![Build Status](https://travis-ci.org/kirstein/zimple.png)](https://travis-ci.org/kirstein/zimple) [![Coverage Status](https://coveralls.io/repos/kirstein/zimple/badge.png)](https://coveralls.io/r/kirstein/zimple)
 
 > A lightweight utility belt
 
