@@ -12,9 +12,12 @@ module.exports = (grunt) ->
   ###
   # tasks
   ###
-  grunt.registerTask 'test', [ 'mochacli' ]
-  grunt.registerTask 'build', [ 'clean', 'coffee', 'test', 'wrap', 'uglify' ]
-  grunt.registerTask 'default', [ 'build' ]
+  grunt.registerTask 'build', [ 'clean', 'coffee' ]
+  grunt.registerTask 'test', [ 'build', 'mochacov:spec' ]
+  grunt.registerTask 'cov',  [ 'build', 'mochacov:cov' ]
+  grunt.registerTask 'travis', [ 'build', 'mochacov:travis' ]
+  grunt.registerTask 'release', [ 'build', 'test', 'wrap', 'uglify' ]
+  grunt.registerTask 'default', [ 'test' ]
 
   ###
   # config
@@ -53,14 +56,17 @@ module.exports = (grunt) ->
           'zimple.min.js' : [ 'zimple.js' ]
 
 
-    # For testing we run all the plugin tests
-    # and all the standalone tests
-    mochacli:
-      all : [ "#{LIB_PATH}/**/*.test.js" ]
+    mochacov :
+      travis :
+        coveralls : serviceName : 'travis-ci'
+      spec :
+        options : reporter : 'spec'
+      cov  :
+        options : reporter : 'html-cov'
       options :
+        files    : [ "#{LIB_PATH}/**/*.test.js" ]
         require  : [ 'should' ]
         growl    : true
-        reporter : 'spec'
         ui       : 'tdd'
 
     # Watch for file changes.

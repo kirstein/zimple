@@ -7,6 +7,11 @@
     "type": "git",
     "url": "https://github.com/kirstein/zimple.git"
   },
+  "scripts": {
+    "blanket": {
+      "pattern": [ "lib/src" ]
+    }
+  },
   "author": "Mikk Kirstein",
   "license": "MIT",
   "devDependencies": {
@@ -16,11 +21,11 @@
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
-    "grunt-mocha-cli": "~1.3.0",
     "load-grunt-tasks": "~0.2.0",
     "sinon": "~1.7.3",
     "assert": "~1.0.0",
     "grunt-wrap": "~0.3.0",
-    "grunt-contrib-uglify": "~0.2.7"
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-mocha-cov": "~0.1.1"
   }
 }
