@@ -1,6 +1,7 @@
-## #chain
+# #chain
 
-### Lazy chaining of Z plugins.
+## Lazy chaining of Z plugins.
+---
 
 Chain makes it possible to easily chain together all predefined Z plugins (that allow chaining).  
 
@@ -11,7 +12,8 @@ Chain makes it possible to easily chain together all predefined Z plugins (that 
 
 Links in chain are completely lazy. They will be evaluate only when the result is called.
 
-### What you can and cant do
+## What you can and cant do
+---
 
 You cant chain together plugins that:
 
@@ -20,7 +22,8 @@ You cant chain together plugins that:
 
 All other defined plugins are chain-able. Go nuts!
 
-### How it works
+## How it works
+---
 
 When the `result` of a chain is called then all chain links, starting from the first will be evaluated.  
 Each next link will receive the context of the previous links return value.
@@ -35,15 +38,19 @@ __Example:__
       });
     });
     
-    Z.chain([1,3,5]).sum().double().value()   // 18
-    Z([1,3,5]).chain().sum().double().value() // 18
+    alert(Z.chain([1,3,5]).sum().double().value())   // 18
+    alert(Z([1,3,5]).chain().sum().double().value()) // 18
 ```
+[jsfiddle demo](http://jsfiddle.net/4wSDM/)
 
-### API
+## API
+---
 
-1. `#value` returns the value of a current chain, evaluating all chains links.
+1. `#chain(<context>)` will start the chain on given context (first member will be called with this context)
+2. `#value()` returns the value of a current chain, evaluating all chains links.
 
-### Options
+## Options
+---
 
 List of options given to Z while registering the `chain` plugin:
 
