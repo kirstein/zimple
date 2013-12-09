@@ -58,7 +58,7 @@ module.exports = (grunt) ->
 
     mochacov :
       travis :
-        coveralls : serviceName : 'travis-ci'
+        options : coveralls : serviceName : 'travis-ci'
       spec :
         options : reporter : 'spec'
       cov  :
