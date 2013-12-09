@@ -1,7 +1,7 @@
 # #once
 
 ## Call a wrapped function only once.
----
+
 Once makes it easy to make functions callable only once.
 
 ```
@@ -10,7 +10,6 @@ Once makes it easy to make functions callable only once.
 ```
 
 ## How it works
----
 
 When wrapping a function with `once` it will return a new wrapped function that saves its return value after the first call. Every call after that will be ignored and the first calls result will be returned instead.
 
@@ -33,12 +32,10 @@ __Example:__
 [jsfiddle demo](http://jsfiddle.net/NhGX3/)
 
 ## API
----
 
 1. `#once(<function>)` returns a wrapped function
 
 ## Options
----
 
 List of options given to Z while registering the `once` plugin:
 

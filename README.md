@@ -3,14 +3,12 @@
 > A lightweight utility belt
 
 ## Concept
----
 
 `Zimple` or `Z` is an utility belt for `JavaScript` developers. It is a versatile and simple way to handle small pieces of reusable code (or plugins) in your application.  
 
 `Z` has a beautiful `jQuery-like` making it simple and easy to use its plugins.
 
 ## Plugins
----
 
 * [chain](https://github.com/kirstein/zimple/tree/master/plugins/chain)
 * [once](https://github.com/kirstein/zimple/tree/master/plugins/once)
@@ -18,16 +16,13 @@
 
 The plugin list is extremely small at the moment, but with any luck its going to grow.
 
-
 ## API
----
 
 1. `#fn('plugin name', pluginFn, [options])` registers `Z` plugin  
     Options are optional. By default they are set as empty object.
 
 
 ## Usage
----
 #### using plugins
 
 There are three designed ways to use `Z` plugins.
@@ -69,7 +64,6 @@ Calling from inside plugins with `this` keyword means that the original plugin w
 
 
 ## Creating plugins
----
 
 Plugin creation is extremely easy with `Z`. All you need to do is to register your plugin via `#fn` method. This registers the plugin globally for `Z` and ca be instantly used.
 
