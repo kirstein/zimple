@@ -1,14 +1,24 @@
+# Curries function parameters
+#
+# Will evaluate function definition to figure out the `expected` parameter count for this function.
+# Then on each call it will try to evaluate the function with given parameters.
+# If the parameter count is lower than the expected or `expected` parameter count then it return a new curried function.
+#
+# Curry does not directly work in `chains`, however it can be used in plugin (that can be also in chains).
+#
+# The first parameter of curry optional and marks the `expected` parameter count.
+# If the parameter is defined then it will consider that count as its `expected` count.
+# If the parameter is defined then it will NOT evaluate function definition for arg count
 do (Z) ->
   COUNT_REGEX = /\((.*)\)/
 
-  curryFn = (fn, args...) ->
+  curryFn = (fn, count) ->
     throw new Error 'Z.curry: No function defined' if typeof fn isnt 'function'
-    count = getArgumentCount fn
+    count ?= getArgumentCount fn
 
-    curryWrapper = (partialargs...) =>
-      args = args.concat partialargs
+    curryWrapper = (args...) =>
       if count > args.length
-        curryWrapper
+        (wrapperargs...) => curryWrapper.apply @, args.concat wrapperargs
       else
         fn.apply @, args
 

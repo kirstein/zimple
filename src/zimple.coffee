@@ -68,7 +68,7 @@ class ZWrapper extends Z
     @__wrapper = true
     @__context = context
     @__fn      = fn
-    return (args...) => fn.apply @, [ context].concat args
+    return (args...) => fn.apply @, [ context ].concat args
 
 # Expose the Z module
 if module?.exports
