@@ -60,3 +60,19 @@ describe 'once plugin', ->
     fn  = Z(-> ++count).once()
     fn().should.eql 1
     fn().should.eql 1
+
+  it 'should be used in other plugins', ->
+    spy = sinon.spy()
+    Z.fn 'incTimes', (count, spy) ->
+      once = this.once(spy)
+      once i for i in [0..count]
+    Z.incTimes(10, spy)
+    spy.callCount.should.eql 1
+
+  it 'should be used in other plugins (wrapper)', ->
+    spy = sinon.spy()
+    Z.fn 'incTimes', (count, spy) ->
+      once = this.once(spy)
+      once i for i in [0..count]
+    Z(10).incTimes(spy)
+    spy.callCount.should.eql 1

@@ -12,20 +12,22 @@
 do (Z) ->
   COUNT_REGEX = /\((.*)\)/
 
-  curryFn = (fn, count) ->
+  curryFn = (fn, maxCount) ->
     throw new Error 'Z.curry: No function defined' if typeof fn isnt 'function'
-    count ?= getArgumentCount fn
+    maxCount ?= getArgumentCount fn
 
-    curryWrapper = (args...) =>
-      if count > args.length
-        (wrapperargs...) => curryWrapper.apply @, args.concat wrapperargs
+    # Return a wrapper that returns a new wrapper if the maxCount has not been reached
+    curryWrapper = (args...) ->
+      if maxCount > args.length
+        (wrapperargs...) -> curryWrapper.apply @, args.concat wrapperargs
       else
         fn.apply @, args
 
   # Parses the function name and fetches the count of arguments from it
   getArgumentCount = (fn) ->
-    args = fn.toString().match(COUNT_REGEX)
-    args[1].split(',').length
+    args = fn.toString().match(COUNT_REGEX)[1]
+    args.split(',').length
 
   # Expose the curry plugin
+  # Make the curry plugin unchainable.
   Z.fn 'curry', curryFn, chain : false

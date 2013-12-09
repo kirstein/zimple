@@ -9,6 +9,9 @@ describe 'chain plugin', ->
 
   describe 'chain linking', ->
 
+    it 'should not chain with itself', ->
+      assert Z('one').chain().chain == undefined
+
     it 'should not link function names starting with _', ->
       Z::_testFn = ->
       assert Z('one').chain()._testFn == undefined
@@ -31,8 +34,7 @@ describe 'chain plugin', ->
     Z('one').chain().value.should.be.ok
 
   it 'should pass arguments', ->
-    Z.fn 'argguard', (context, arg) ->
-      throw new Error "Invalid argument passed" if arg != 'wat'
+    Z.fn 'argguard', (context, arg) -> throw new Error "Invalid argument passed" if arg isnt 'wat'
 
     Z().chain().argguard('wat').value()
     Z.chain().argguard('wat').value()
@@ -78,6 +80,22 @@ describe 'chain plugin', ->
     it 'should receive the value after chaining', ->
       Z('one').chain().reverse().value().should.eql 'eno'
       Z.chain('one').reverse().value().should.eql 'eno'
+
+    it 'should work when the original context has been changed', ->
+      context = [ 1,2,3,4 ]
+      Z.fn 'double', (val) -> val * 2
+      Z.fn 'sum', (arr)    -> arr.reduce (a, v) -> a + v
+      chain = Z(context).chain().sum().double()
+      context.push 20
+      chain.value().should.eql 60
+
+    it 'should work when the original context has changed (partial)', ->
+      context = [ 1,2,3,4 ]
+      Z.fn 'double', (val) -> val * 2
+      Z.fn 'sum', (arr)    -> arr.reduce (a, v) -> a + v
+      chain = Z.chain(context).sum().double()
+      context.push 20
+      chain.value().should.eql 60
 
     it 'should receive the value after chaining (MULTIPLE LINKS)', ->
       Z('one').chain().reverse().uppercase().value().should.eql 'ENO'
