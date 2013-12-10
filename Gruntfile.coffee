@@ -40,7 +40,13 @@ module.exports = (grunt) ->
         options :
           # Do not wrap it in self executing fn
           bare : true
-        files : 'lib/src/zimple.js' : [ "#{SRC_PATH}/**/*.coffee", "#{PLUGIN_PATH}/**/*.coffee", "!#{PLUGIN_PATH}/**/*.test.coffee" ]
+        files : 'lib/src/zimple.js' :
+          [
+            "#{SRC_PATH}/**/zimple.coffee",     # Core as first
+            "#{PLUGIN_PATH}/**/*.coffee",       # Attach all the plugin files
+            "!#{PLUGIN_PATH}/**/*.test.coffee", # Skip all the tests for building
+            "#{SRC_PATH}/**/expose.coffee"      # Let it be the last module
+          ]
       test:
         src     : [ TEST_PATH, PLUGIN_PATH ].map (path) -> "#{path}/**/*.test.coffee"
         dest    : LIB_PATH

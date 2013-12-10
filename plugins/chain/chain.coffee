@@ -21,12 +21,16 @@ do (Z) ->
     # Validate that the plugin is chainable.
     # Only chain plugins that do not have the same names as Chain prototyped methods
     # and plugins who have not set their chain value as false
-    _isChainable : (name, options) ->
-      not Chain::[name] and options.chain isnt false
+    _isChainable : (name, { chain }) ->
+      not Chain::[name] and chain isnt false
 
     # Create a closure that will push the function to links list on calling
-    _link : (func) -> (args...) ->
-      @__links.push (context) => func.apply @__root, [ context ].concat args
+    _link : (func) -> (args...) =>
+      # Push the closure to links list
+      @__links.push (context) =>
+        # Use the Z._wrap functionality to wrap the designated function
+        # This way we dont have to worry about the context changes
+        @__root._wrap(func, context).apply null, args
       @
 
     # Trigger each link of the chain and returns a value

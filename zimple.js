@@ -8,24 +8,22 @@ Z = (function() {
   Z.prototype.__plugins = {};
 
   function Z(context) {
+    var name, plugin, _ref;
     if (context == null) {
       context = null;
     }
     if (!(this instanceof Z)) {
       return new Z(context);
     }
-    this.__context = context;
-    this._attachPlugins(this.__plugins);
+    _ref = this.__plugins;
+    for (name in _ref) {
+      plugin = _ref[name];
+      this[name] = this._wrap(plugin.fn, context);
+    }
   }
 
-  Z.prototype._attachPlugins = function(plugins) {
-    var name, plugin, _results;
-    _results = [];
-    for (name in plugins) {
-      plugin = plugins[name];
-      _results.push(this[name] = new ZWrapper(this.__context, plugin.fn));
-    }
-    return _results;
+  Z.prototype._wrap = function(fn, context) {
+    return new ZWrapper(fn, context);
   };
 
   Z.fn = function(name, fn, options) {
@@ -42,12 +40,12 @@ Z = (function() {
       fn: fn,
       options: options
     };
+    Z.prototype[name] = fn;
     Z[name] = function() {
       var args, context;
       context = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       return new Z(context)[name].apply(null, args);
     };
-    Z.prototype[name] = fn;
     return Z;
   };
 
@@ -58,9 +56,8 @@ Z = (function() {
 ZWrapper = (function(_super) {
   __extends(ZWrapper, _super);
 
-  function ZWrapper(context, fn) {
+  function ZWrapper(fn, context) {
     var _this = this;
-    this.__wrapper = true;
     return function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
@@ -71,16 +68,6 @@ ZWrapper = (function(_super) {
   return ZWrapper;
 
 })(Z);
-
-if (typeof module !== "undefined" && module !== null ? module.exports : void 0) {
-  module.exports = Z;
-} else if (typeof define === 'function' && typeof (typeof define !== "undefined" && define !== null ? define.amd : void 0)) {
-  define(function() {
-    return Z;
-  });
-} else {
-  global.Z = Z;
-}
 
 var __slice = [].slice;
 
@@ -108,19 +95,21 @@ var __slice = [].slice;
       return _results;
     };
 
-    Chain.prototype._isChainable = function(name, options) {
-      return !Chain.prototype[name] && options.chain !== false;
+    Chain.prototype._isChainable = function(name, _arg) {
+      var chain;
+      chain = _arg.chain;
+      return !Chain.prototype[name] && chain !== false;
     };
 
     Chain.prototype._link = function(func) {
+      var _this = this;
       return function() {
-        var args,
-          _this = this;
+        var args;
         args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-        this.__links.push(function(context) {
-          return func.apply(_this.__root, [context].concat(args));
+        _this.__links.push(function(context) {
+          return _this.__root._wrap(func, context).apply(null, args);
         });
-        return this;
+        return _this;
       };
     };
 
@@ -207,5 +196,15 @@ var __slice = [].slice;
     chain: false
   });
 })(Z);
+
+if (typeof module !== "undefined" && module !== null ? module.exports : void 0) {
+  module.exports = Z;
+} else if (typeof define === 'function' && define.amd) {
+  define(function() {
+    return Z;
+  });
+} else {
+  global.Z = Z;
+}
 
 })(this);
