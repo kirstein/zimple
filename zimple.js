@@ -181,6 +181,27 @@ var __slice = [].slice;
   });
 })(Z);
 
+(function() {
+  return Z.fn('map', function(arr, fn, thisArg) {
+    var item, _i, _len, _results;
+    if (thisArg == null) {
+      thisArg = this;
+    }
+    if (!Array.isArray(arr)) {
+      throw new Error('Z.map: No array defined');
+    }
+    if (typeof fn !== 'function') {
+      throw new Error('Z.map: No function defined');
+    }
+    _results = [];
+    for (_i = 0, _len = arr.length; _i < _len; _i++) {
+      item = arr[_i];
+      _results.push(fn.call(thisArg, item));
+    }
+    return _results;
+  });
+})();
+
 var __slice = [].slice;
 
 (function(Z) {
