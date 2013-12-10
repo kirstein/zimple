@@ -1,4 +1,4 @@
-global.Z      = require '../../src/zimple'
+global.Z = require '../../src/zimple'
 require './once'
 
 sinon  = require 'sinon'
