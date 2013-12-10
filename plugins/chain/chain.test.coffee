@@ -1,6 +1,9 @@
-Z      = require '../../src/zimple'
+global.Z = require '../../src/zimple'
+require './chain'
+
 sinon  = require 'sinon'
 assert = require 'assert'
+
 
 describe 'chain plugin', ->
 
@@ -34,14 +37,14 @@ describe 'chain plugin', ->
     Z('one').chain().value.should.be.ok
 
   it 'should pass arguments', ->
-    Z.fn 'argguard', (context, arg) -> throw new Error "Invalid argument passed" if arg isnt 'wat'
+    Z.fn 'argguard', (context, arg) -> arg.should.eql 'wat'
 
     Z().chain().argguard('wat').value()
     Z.chain().argguard('wat').value()
 
   it 'should pass the correct context', ->
     Z.fn 'call', (context, arg) ->
-      throw new Error "Invalid argument passed: #{arg}" if arg
+      assert arg == undefined
       context()
 
     spy = sinon.spy()

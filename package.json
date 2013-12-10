@@ -9,9 +9,12 @@
   },
   "scripts": {
     "blanket": {
-      "pattern": [
-        "lib/src"
-      ]
+      "loader": "./node-loaders/coffee-script",
+      "data-cover-only": [
+        "src",
+        "plugins"
+      ],
+      "data-cover-never": "node_modules"
     }
   },
   "author": "Mikk Kirstein",
@@ -29,6 +32,7 @@
     "grunt-wrap": "~0.3.0",
     "grunt-contrib-uglify": "~0.2.7",
     "grunt-mocha-cov": "~0.1.1",
-    "grunt-cli": "~0.1.11"
+    "grunt-cli": "~0.1.11",
+    "blanket": "~1.1.5"
   }
 }

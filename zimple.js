@@ -69,6 +69,16 @@ ZWrapper = (function(_super) {
 
 })(Z);
 
+if (typeof module !== "undefined" && module !== null ? module.exports : void 0) {
+  module.exports = Z;
+} else if (typeof define === 'function' && define.amd) {
+  define(function() {
+    return Z;
+  });
+} else {
+  global.Z = Z;
+}
+
 var __slice = [].slice;
 
 (function(Z) {
@@ -196,15 +206,5 @@ var __slice = [].slice;
     chain: false
   });
 })(Z);
-
-if (typeof module !== "undefined" && module !== null ? module.exports : void 0) {
-  module.exports = Z;
-} else if (typeof define === 'function' && define.amd) {
-  define(function() {
-    return Z;
-  });
-} else {
-  global.Z = Z;
-}
 
 })(this);

@@ -53,3 +53,11 @@ class Z
 class ZWrapper extends Z
   constructor : (fn, context) ->
     return (args...) => fn.apply @, [ context ].concat args
+
+# Expose the Z module
+if module?.exports
+  module.exports = Z
+else if typeof define is 'function' and define.amd
+  define -> Z
+else
+  global.Z = Z

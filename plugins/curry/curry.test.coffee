@@ -1,4 +1,6 @@
-Z      = require '../../src/zimple'
+global.Z = require '../../src/zimple'
+require './curry'
+
 assert = require 'assert'
 
 describe 'curry plugin', ->
@@ -20,7 +22,7 @@ describe 'curry plugin', ->
 
   it 'should mark parameter count as the optional parameter (wrapped)', ->
     def = (a, b, c, d, e, f) ->
-      throw new Error 'too many arguments' unless arguments.length is 2
+      arguments.length.should.eql 2
       a + b
 
     par = Z(def).curry 2
@@ -29,7 +31,7 @@ describe 'curry plugin', ->
 
   it 'should mark parameter count as the optional parameter (partial)', ->
     def = (a, b, c, d, e, f) ->
-      throw new Error 'too many arguments' unless arguments.length is 2
+      arguments.length.should.eql 2
       a + b
 
     par = Z.curry def, 2
@@ -37,16 +39,16 @@ describe 'curry plugin', ->
     par('xxx', 'asd').should.eql 'xxxasd'
 
   it 'should be able to set parameter count as 0', ->
-    def = (a, b, c) -> throw new Error 'too many args' if arguments.length
+    def = (a, b, c) -> arguments.length.should.eql 0
 
     par = Z.curry def, 0
-    assert par() == undefined
+    par()
 
   it 'should pass extra params to function if the max param count is given', ->
-    def = (a, b, c) -> throw new Error 'invalid args' unless c is 'paul'
+    def = (a, b, c) -> c.should.eql 'paul'
 
     par = Z.curry def, 0
-    assert par('hello', 'kitty', 'paul') == undefined
+    par 'hello', 'kitty', 'paul'
 
   it 'should fulfil partial functions', ->
     calc   = (x, y) -> x + y

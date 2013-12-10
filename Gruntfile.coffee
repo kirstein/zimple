@@ -12,11 +12,11 @@ module.exports = (grunt) ->
   ###
   # tasks
   ###
-  grunt.registerTask 'build', [ 'clean', 'coffee' ]
-  grunt.registerTask 'test', [ 'build', 'mochacov:spec' ]
-  grunt.registerTask 'cov',  [ 'build', 'mochacov:cov' ]
-  grunt.registerTask 'travis', [ 'build', 'mochacov:travis' ]
-  grunt.registerTask 'release', [ 'build', 'test', 'wrap', 'uglify' ]
+  grunt.registerTask 'build',   [ 'clean', 'coffee' ]
+  grunt.registerTask 'test',    [ 'mochacov:spec' ]
+  grunt.registerTask 'cov',     [ 'mochacov:cov' ]
+  grunt.registerTask 'travis',  [ 'mochacov:travis' ]
+  grunt.registerTask 'release', [ 'test', 'wrap', 'uglify' ]
   grunt.registerTask 'default', [ 'test' ]
 
   ###
@@ -45,7 +45,6 @@ module.exports = (grunt) ->
             "#{SRC_PATH}/**/zimple.coffee",     # Core as first
             "#{PLUGIN_PATH}/**/*.coffee",       # Attach all the plugin files
             "!#{PLUGIN_PATH}/**/*.test.coffee", # Skip all the tests for building
-            "#{SRC_PATH}/**/expose.coffee"      # Let it be the last module
           ]
       test:
         src     : [ TEST_PATH, PLUGIN_PATH ].map (path) -> "#{path}/**/*.test.coffee"
@@ -61,7 +60,6 @@ module.exports = (grunt) ->
         files  :
           'zimple.min.js' : [ 'zimple.js' ]
 
-
     mochacov :
       travis :
         options : coveralls : serviceName : 'travis-ci'
@@ -70,10 +68,11 @@ module.exports = (grunt) ->
       cov  :
         options : reporter : 'html-cov'
       options :
-        files    : [ "#{LIB_PATH}/**/*.test.js" ]
-        require  : [ 'should' ]
-        growl    : true
-        ui       : 'tdd'
+        compilers : [ 'coffee:coffee-script' ]
+        files     : [ '**/*.test.coffee' ]
+        require   : [ 'should' ]
+        growl     : true
+        ui        : 'tdd'
 
     # Watch for file changes.
     watch:
