@@ -12,11 +12,10 @@ module.exports = (grunt) ->
   ###
   # tasks
   ###
-  grunt.registerTask 'build',   [ 'clean', 'coffee' ]
   grunt.registerTask 'test',    [ 'mochacov:spec' ]
   grunt.registerTask 'cov',     [ 'mochacov:cov' ]
   grunt.registerTask 'travis',  [ 'mochacov:travis' ]
-  grunt.registerTask 'release', [ 'test', 'wrap', 'uglify' ]
+  grunt.registerTask 'build',   [ 'clean', 'coffee', 'test', 'wrap', 'uglify' ]
   grunt.registerTask 'default', [ 'test' ]
 
   ###
@@ -78,6 +77,6 @@ module.exports = (grunt) ->
     watch:
       lib:
         files : [ '**/*.coffee' ]
-        tasks : [ 'clean', 'coffee', 'test' ]
+        tasks : [ 'test' ]
         options :
           nospawn : true
