@@ -1,8 +1,6 @@
 (function(global, undefined) {
 var Z, ZWrapper,
-  __slice = [].slice,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  __slice = [].slice;
 
 Z = (function() {
   Z.prototype.__plugins = {};
@@ -18,13 +16,9 @@ Z = (function() {
     _ref = this.__plugins;
     for (name in _ref) {
       plugin = _ref[name];
-      this[name] = this._wrap(plugin.fn, context);
+      this[name] = new ZWrapper(plugin.fn, context);
     }
   }
-
-  Z.prototype._wrap = function(fn, context) {
-    return new ZWrapper(fn, context);
-  };
 
   Z.fn = function(name, fn, options) {
     if (options == null) {
@@ -40,7 +34,7 @@ Z = (function() {
       fn: fn,
       options: options
     };
-    Z.prototype[name] = fn;
+    ZWrapper.prototype[name] = fn;
     Z[name] = function() {
       var args, context;
       context = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
@@ -53,8 +47,10 @@ Z = (function() {
 
 })();
 
-ZWrapper = (function(_super) {
-  __extends(ZWrapper, _super);
+ZWrapper = (function() {
+  ZWrapper.prototype._wrap = function(fn, context) {
+    return new ZWrapper(fn, context);
+  };
 
   function ZWrapper(fn, context) {
     var _this = this;
@@ -67,7 +63,7 @@ ZWrapper = (function(_super) {
 
   return ZWrapper;
 
-})(Z);
+})();
 
 if (typeof module !== "undefined" && module !== null ? module.exports : void 0) {
   module.exports = Z;
