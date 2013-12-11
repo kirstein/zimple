@@ -9,10 +9,10 @@ do (Z) ->
 
     called   = false
     response = null
-    (args...) ->
+    ->
       unless called
         called   = true
-        response = fn.apply context, args
+        response = fn.apply context, arguments
       response
 
   # Expose the plugin

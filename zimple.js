@@ -50,11 +50,12 @@ ZWrapper = (function() {
     hasContext = arguments.length === 1;
     return function() {
       var args;
+      args = arguments;
       if (!hasContext) {
-        args = Array.prototype.slice.call(arguments);
+        args = Array.prototype.slice.call(args);
         args.unshift(context);
       }
-      return fn.apply(_this, args || arguments);
+      return fn.apply(_this, args);
     };
   }
 
@@ -71,8 +72,6 @@ if (typeof module !== "undefined" && module !== null ? module.exports : void 0) 
 } else {
   global.Z = Z;
 }
-
-var __slice = [].slice;
 
 (function(Z) {
   var Chain;
@@ -108,7 +107,7 @@ var __slice = [].slice;
       var _this = this;
       return function() {
         var args;
-        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        args = arguments;
         _this.__links.push(function(context) {
           return _this.__root._wrap(func, context).apply(null, args);
         });
@@ -196,8 +195,6 @@ var __slice = [].slice;
   });
 })();
 
-var __slice = [].slice;
-
 (function(Z) {
   var onceFn;
   onceFn = function(fn, context) {
@@ -208,11 +205,9 @@ var __slice = [].slice;
     called = false;
     response = null;
     return function() {
-      var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       if (!called) {
         called = true;
-        response = fn.apply(context, args);
+        response = fn.apply(context, arguments);
       }
       return response;
     };

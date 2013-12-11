@@ -54,15 +54,16 @@ class ZWrapper
   constructor : (fn, context) ->
     hasContext = arguments.length == 1
     return =>
+      args = arguments
 
       # Only splice the arguments if we really need to
       # grants us quite a lot of speed
       unless hasContext
-        args = Array::slice.call arguments
+        args = Array::slice.call args
         args.unshift context
 
       # Make sure that we keep the context
-      fn.apply @, args or arguments
+      fn.apply @, args
 
 # Expose the Z module
 if module?.exports

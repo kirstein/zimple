@@ -25,7 +25,8 @@ do (Z) ->
       not Chain::[name] and chain isnt false
 
     # Create a closure that will push the function to links list on calling
-    _link : (func) -> (args...) =>
+    _link : (func) -> =>
+      args = arguments
       # Push the closure to links list
       @__links.push (context) =>
         # Use the Z._wrap functionality to wrap the designated function
