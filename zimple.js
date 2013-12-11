@@ -1,6 +1,5 @@
 (function(global, undefined) {
-var Z, ZWrapper,
-  __slice = [].slice;
+var Z, ZWrapper;
 
 Z = (function() {
   Z.prototype.__plugins = {};
@@ -51,11 +50,11 @@ ZWrapper = (function() {
     hasContext = arguments.length === 1;
     return function() {
       var args;
-      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       if (!hasContext) {
+        args = Array.prototype.slice.call(arguments);
         args.unshift(context);
       }
-      return fn.apply(_this, args);
+      return fn.apply(_this, args || arguments);
     };
   }
 

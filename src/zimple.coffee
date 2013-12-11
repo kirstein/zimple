@@ -16,6 +16,9 @@ class Z
   # After the initiation will add plugins as members.
   constructor: (context) ->
     return new Z context unless @ instanceof Z
+
+    # We need to wrap each plugin as a member function
+    # otherwise we cannot deal with calling members by their references. This is a huge performance hit
     @[name] = new ZWrapper plugin.fn, context for name, plugin of @__plugins
 
   # Register Z plugin
@@ -50,10 +53,16 @@ class ZWrapper
   _wrap : (fn, context) -> new ZWrapper fn, context
   constructor : (fn, context) ->
     hasContext = arguments.length == 1
-    return (args...) =>
+    return =>
+
+      # Only splice the arguments if we really need to
+      # grants us quite a lot of speed
       unless hasContext
+        args = Array::slice.call arguments
         args.unshift context
-      fn.apply @, args
+
+      # Make sure that we keep the context
+      fn.apply @, args or arguments
 
 # Expose the Z module
 if module?.exports
