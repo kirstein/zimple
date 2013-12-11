@@ -7,9 +7,6 @@ Z = (function() {
 
   function Z(context) {
     var name, plugin, _ref;
-    if (context == null) {
-      context = null;
-    }
     if (!(this instanceof Z)) {
       return new Z(context);
     }
@@ -35,11 +32,7 @@ Z = (function() {
       options: options
     };
     ZWrapper.prototype[name] = fn;
-    Z[name] = function() {
-      var args, context;
-      context = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-      return new Z(context)[name].apply(null, args);
-    };
+    Z[name] = new ZWrapper(fn);
     return Z;
   };
 
@@ -53,11 +46,16 @@ ZWrapper = (function() {
   };
 
   function ZWrapper(fn, context) {
-    var _this = this;
+    var hasContext,
+      _this = this;
+    hasContext = arguments.length === 1;
     return function() {
       var args;
       args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return fn.apply(_this, [context].concat(args));
+      if (!hasContext) {
+        args.unshift(context);
+      }
+      return fn.apply(_this, args);
     };
   }
 
@@ -180,9 +178,6 @@ var __slice = [].slice;
 (function() {
   return Z.fn('map', function(arr, fn, thisArg) {
     var item, _i, _len, _results;
-    if (thisArg == null) {
-      thisArg = this;
-    }
     if (!Array.isArray(arr)) {
       throw new Error('Z.map: No array defined');
     }
@@ -192,7 +187,11 @@ var __slice = [].slice;
     _results = [];
     for (_i = 0, _len = arr.length; _i < _len; _i++) {
       item = arr[_i];
-      _results.push(fn.call(thisArg, item));
+      if (thisArg) {
+        _results.push(fn.call(thisArg, item));
+      } else {
+        _results.push(fn(item));
+      }
     }
     return _results;
   });

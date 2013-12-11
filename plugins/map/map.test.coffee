@@ -48,10 +48,6 @@ describe 'map plugin', ->
     Z([1,2,5]).map fn, context
     Z.map [1,2,5], fn, context
 
-  it 'should pass wrapper as default this', ->
-    Z([1,2,5]).map -> assert @ instanceof Z
-    Z.map [1,2,5], -> assert @ instanceof Z
-
   it 'should work in plugins', ->
     double = (val) -> val*2
     Z.fn 'test', (arr) -> this.map arr, double

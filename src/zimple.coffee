@@ -14,15 +14,9 @@ class Z
   #
   # Calling Z with and without `new` keyword will have no effect of the functionality.
   # After the initiation will add plugins as members.
-  constructor: (context = null) ->
+  constructor: (context) ->
     return new Z context unless @ instanceof Z
-
-    # Attach plugins to Z
-    @[name] = @_wrap plugin.fn, context for name, plugin of @__plugins
-
-  # Create a wrapper for a function
-  # When plugin is called then the result will be ZWrapper type
-  _wrap : (fn, context) -> new ZWrapper fn, context
+    @[name] = new ZWrapper plugin.fn, context for name, plugin of @__plugins
 
   # Register Z plugin
   #
@@ -39,10 +33,10 @@ class Z
 
     # Attach the plugin to plugins list
     Z::__plugins[name] = fn : fn, options : options
-    Z::[name] = fn
+    ZWrapper::[name] = fn
 
     # Add wrapper function so we can later on access the plugins by calling Z.<plugin name>
-    Z[name] = (context, args...) -> new Z(context)[name].apply null, args
+    Z[name] = new ZWrapper fn
     Z
 
 # Wrapper class for Z plugins
@@ -50,9 +44,16 @@ class Z
 #
 # This is necessary for direct `this` access in plugins.
 # When the wrapper functions are called it will modify the context of Z
-class ZWrapper extends Z
+class ZWrapper
+  # Create a wrapper for a function
+  # When plugin is called then the result will be ZWrapper type
+  _wrap : (fn, context) -> new ZWrapper fn, context
   constructor : (fn, context) ->
-    return (args...) => fn.apply @, [ context ].concat args
+    hasContext = arguments.length == 1
+    return (args...) =>
+      unless hasContext
+        args.unshift context
+      fn.apply @, args
 
 # Expose the Z module
 if module?.exports

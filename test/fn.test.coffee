@@ -38,18 +38,6 @@ describe 'zimple #fn', ->
     Z().param('test').should.eql('test')
     Z.param(null, 'test').should.eql('test')
 
-  it 'should have context of Z', ->
-    Z.fn 'param', (arr, parameter) -> @
-
-    Z().param().should.be.instanceOf Z
-    Z.param().should.be.instanceOf Z
-
-  it 'should keep the Z context even when its called with different context', ->
-    Z.fn 'param', (arr, parameter) -> @
-
-    Z().param.call('yolo').should.be.instanceOf Z
-    Z.param.call('yolo').should.be.instanceOf Z
-
   it 'should not pass extra params to arguments', ->
     Z.fn 'paramguard', (context, args) -> throw new Error "did not expect any args #{args}" if args
 

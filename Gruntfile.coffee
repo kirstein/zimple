@@ -3,11 +3,12 @@ module.exports = (grunt) ->
   # Require all grunt plugins at once
   require('load-grunt-tasks')(grunt)
 
-  # Path configrations
+  # Path configurations
   LIB_PATH    = 'lib'
   SRC_PATH    = 'src'
   TEST_PATH   = 'test'
   PLUGIN_PATH = 'plugins'
+  PERF_PATH   = 'perf'
 
   ###
   # tasks
@@ -15,8 +16,10 @@ module.exports = (grunt) ->
   grunt.registerTask 'test',    [ 'mochacov:spec' ]
   grunt.registerTask 'cov',     [ 'mochacov:cov' ]
   grunt.registerTask 'travis',  [ 'mochacov:travis' ]
-  grunt.registerTask 'build',   [ 'clean', 'coffee', 'test', 'wrap', 'uglify' ]
+  grunt.registerTask 'build',   [ 'clean', 'coffee:build', 'test', 'wrap', 'uglify' ]
+  grunt.registerTask 'build:perf', [ 'clean:perf', 'coffee', 'exec:browserify' ]
   grunt.registerTask 'default', [ 'test' ]
+  grunt.registerTask 'perf',    [ 'build:perf', 'exec:perf' ]
 
   ###
   # config
@@ -25,8 +28,15 @@ module.exports = (grunt) ->
 
     # Clean the lib folder
     clean:
-      lib : [ LIB_PATH ]
+      lib  : [ LIB_PATH ]
+      perf : [ "#{PERF_PATH}/lib" ]
 
+    # Execute commands
+    exec :
+      perf : cmd : "node #{PERF_PATH}/lib/node.perf start"
+      browserify : cmd : "browserify #{PERF_PATH}/lib/node.perf > #{PERF_PATH}/lib/browser.perf.js"
+
+    # Wrap the zimple.js in customized wrapper
     wrap :
       production:
         src     : "#{LIB_PATH}/src/zimple.js"
@@ -34,24 +44,31 @@ module.exports = (grunt) ->
         options :
           wrapper : ['(function(global, undefined) {', '})(this);']
 
+    # Compile coffee-script files to js
     coffee:
+      # Performance files only
+      perf  :
+        options : bare : true
+        files   : 'perf/lib/node.perf.js' :
+          [
+            "#{PERF_PATH}/runner-header.coffee",
+            "#{TEST_PATH}/perf/**/*.perf.coffee",
+            "#{PLUGIN_PATH}/**/*.perf.coffee",
+            "#{PERF_PATH}/runner-footer.coffee" # This must be the last file
+          ]
+
+      # All files for building purposes
       build :
-        options :
-          # Do not wrap it in self executing fn
-          bare : true
+        options : bare : true
         files : 'lib/src/zimple.js' :
           [
             "#{SRC_PATH}/**/zimple.coffee",     # Core as first
             "#{PLUGIN_PATH}/**/*.coffee",       # Attach all the plugin files
             "!#{PLUGIN_PATH}/**/*.test.coffee", # Skip all the tests for building
+            "!#{PLUGIN_PATH}/**/*.perf.coffee", # Skip all the tests for building
           ]
-      test:
-        src     : [ TEST_PATH, PLUGIN_PATH ].map (path) -> "#{path}/**/*.test.coffee"
-        dest    : LIB_PATH
-        expand  : true
-        rename  : (dest, src) ->
-          "#{dest}/" + src.replace /\.coffee$/, '.js'
 
+    # Uglify the end result
     uglify :
       build:
         options:
@@ -59,6 +76,7 @@ module.exports = (grunt) ->
         files  :
           'zimple.min.js' : [ 'zimple.js' ]
 
+    # Coverage tests
     mochacov :
       travis :
         options : coveralls : serviceName : 'travis-ci'
