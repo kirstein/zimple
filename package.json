@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Simple helper libarary",
   "homepage": "http://github.com/kirstein/zimple",
+  "main" : "zimple.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/kirstein/zimple.git"

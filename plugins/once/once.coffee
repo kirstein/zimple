@@ -3,17 +3,16 @@
 #
 # Will set property chaining to false
 # throws if no function is defined
-do (Z) ->
-  onceFn = (fn, context) ->
-    throw new Error 'Z.once: No function defined' if typeof fn isnt 'function'
+Z.fn 'once', (fn, context) ->
+  throw new Error 'Z.once: No function defined' if typeof fn isnt 'function'
 
-    called   = false
-    response = null
-    ->
-      unless called
-        called   = true
-        response = fn.apply context, arguments
-      response
+  called   = false
+  response = null
+  ->
+    unless called
+      called   = true
+      response = fn.apply context, arguments
+    response
 
-  # Expose the plugin
-  Z.fn 'once', onceFn , chain : false
+# Make the once function unchainable
+, chain : false

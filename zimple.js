@@ -173,48 +173,64 @@ var __slice = [].slice;
   });
 })(Z);
 
-(function() {
-  return Z.fn('map', function(arr, fn, thisArg) {
-    var item, _i, _len, _results;
-    if (!Array.isArray(arr)) {
-      throw new Error('Z.map: No array defined');
+Z.fn('filter', function(arr, fn, thisArg) {
+  var item, res, result, _i, _len;
+  res = [];
+  for (_i = 0, _len = arr.length; _i < _len; _i++) {
+    item = arr[_i];
+    result = thisArg ? fn.call(thisArg, item) : fn(item);
+    if (result) {
+      res.push(item);
     }
-    if (typeof fn !== 'function') {
-      throw new Error('Z.map: No function defined');
-    }
-    _results = [];
-    for (_i = 0, _len = arr.length; _i < _len; _i++) {
-      item = arr[_i];
-      if (thisArg) {
-        _results.push(fn.call(thisArg, item));
-      } else {
-        _results.push(fn(item));
-      }
-    }
-    return _results;
-  });
-})();
+  }
+  return res;
+});
 
-(function(Z) {
-  var onceFn;
-  onceFn = function(fn, context) {
-    var called, response;
-    if (typeof fn !== 'function') {
-      throw new Error('Z.once: No function defined');
+Z.fn('map', function(arr, fn, thisArg) {
+  var item, _i, _len, _results;
+  _results = [];
+  for (_i = 0, _len = arr.length; _i < _len; _i++) {
+    item = arr[_i];
+    if (thisArg) {
+      _results.push(fn.call(thisArg, item));
+    } else {
+      _results.push(fn(item));
     }
-    called = false;
-    response = null;
-    return function() {
-      if (!called) {
-        called = true;
-        response = fn.apply(context, arguments);
-      }
-      return response;
-    };
+  }
+  return _results;
+});
+
+Z.fn('once', function(fn, context) {
+  var called, response;
+  if (typeof fn !== 'function') {
+    throw new Error('Z.once: No function defined');
+  }
+  called = false;
+  response = null;
+  return function() {
+    if (!called) {
+      called = true;
+      response = fn.apply(context, arguments);
+    }
+    return response;
   };
-  return Z.fn('once', onceFn, {
-    chain: false
-  });
-})(Z);
+}, {
+  chain: false
+});
+
+Z.fn('pluck', function(target, property) {
+  var result;
+  if ((target != null) && (property != null)) {
+    return this.map(target, function(val) {
+      return val[property];
+    });
+  } else {
+    result = [];
+    if (target != null ? target.length : void 0) {
+      result[target.length - 1] = void 0;
+    }
+    return result;
+  }
+});
 
 })(this);

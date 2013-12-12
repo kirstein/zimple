@@ -8,14 +8,6 @@ describe 'map plugin', ->
   it 'should exist', ->
     Z.map.should.be.ok
 
-  it 'should throw when no array is defined', ->
-    (-> Z.map()).should.throw 'Z.map: No array defined'
-    (-> Z().map()).should.throw 'Z.map: No array defined'
-
-  it 'should throw when no function is defined', ->
-    (-> Z.map([])).should.throw 'Z.map: No function defined'
-    (-> Z([]).map()).should.throw 'Z.map: No function defined'
-
   it 'should trigger defined function N times where N is array length', ->
     spy = sinon.spy()
     Z([2,5,6,1,2]).map spy
