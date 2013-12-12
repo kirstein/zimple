@@ -1,5 +1,7 @@
 if typeof document isnt 'undefined'
   window.Benchmark = require 'benchmark'
+else
+  require 'microtime'
 
 __suites = []
 global.registerSuite = (suite, options) ->
@@ -7,4 +9,7 @@ global.registerSuite = (suite, options) ->
   suite
 
 # Expose Z
-Z = require '../../lib/src/zimple'
+global.Z          = require '../../lib/src/zimple'
+global.lodash     = require 'lodash'
+global.underscore = require 'underscore'
+
