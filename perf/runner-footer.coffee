@@ -15,5 +15,5 @@ do ->
 
   if typeof document isnt 'undefined'
     window.__runTests = start
-  else if process.argv.splice(2)[0] == 'start'
+  else
     start()

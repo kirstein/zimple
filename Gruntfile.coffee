@@ -33,7 +33,10 @@ module.exports = (grunt) ->
 
     # Execute commands
     exec :
-      perf : cmd : "node #{PERF_PATH}/lib/node.perf start"
+      perf : cmd : (grep) ->
+        grp = "--grep #{grep}" if grep
+        "node #{PERF_PATH}/lib/node.perf #{grp}"
+
       browserify : cmd : "browserify #{PERF_PATH}/lib/node.perf > #{PERF_PATH}/lib/browser.perf.js"
 
     # Wrap the zimple.js in customized wrapper

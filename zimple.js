@@ -186,6 +186,23 @@ Z.fn('filter', function(arr, fn, thisArg) {
   return res;
 });
 
+var __slice = [].slice;
+
+Z.fn('invoke', function() {
+  var args, arr, item, method, _i, _len, _results;
+  arr = arguments[0], method = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+  _results = [];
+  for (_i = 0, _len = arr.length; _i < _len; _i++) {
+    item = arr[_i];
+    if (!args.length) {
+      _results.push(item[method]());
+    } else {
+      _results.push(item[method].apply(item, args));
+    }
+  }
+  return _results;
+});
+
 Z.fn('map', function(arr, fn, thisArg) {
   var item, _i, _len, _results;
   _results = [];
