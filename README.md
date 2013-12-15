@@ -8,13 +8,15 @@
 
 `Z` has a beautiful `jQuery-like` making it simple and easy to use its plugins.
 
+## Goal
+
+The goal of this project is to be a good experience for me about JS optimization.  
+In all honestly I would not recommend using `Zimple`. Use something like `lodash` instead.
+
 ## Plugins
 
-* [chain](https://github.com/kirstein/zimple/tree/master/plugins/chain)
-* [once](https://github.com/kirstein/zimple/tree/master/plugins/once)
-* [curry](https://github.com/kirstein/zimple/tree/master/plugins/curry)
-
-The plugin list is extremely small at the moment, but with any luck its going to grow.
+View the list of plugins from [here](https://github.com/kirstein/zimple/tree/master/plugins)
+The plugin list is small at the moment, but with any luck its going to grow.
 
 ## API
 
