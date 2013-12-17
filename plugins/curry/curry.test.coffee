@@ -2,8 +2,12 @@ global.Z = require '../../src/zimple'
 require './curry'
 
 assert = require 'assert'
+plugins = Z::__plugins
 
 describe 'curry plugin', ->
+  afterEach  -> Z::__plugins = {}
+  beforeEach -> Z::__plugins = plugins
+
   it 'should be defined', ->
     Z.curry.should.be.ok
     Z().curry.should.be.ok

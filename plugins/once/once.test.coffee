@@ -4,7 +4,12 @@ require './once'
 sinon  = require 'sinon'
 assert = require 'assert'
 
+plugins = Z::__plugins
+
 describe 'once plugin', ->
+  afterEach  -> Z::__plugins = {}
+  beforeEach -> Z::__plugins = plugins
+
   it 'should be defined', ->
     Z.once.should.be.ok
 

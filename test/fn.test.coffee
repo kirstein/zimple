@@ -1,6 +1,8 @@
 Z = require '../src/zimple'
 
+plugins = Z::__plugins
 describe 'zimple #fn', ->
+  afterEach -> Z::__plugins = plugins
   it 'should expose plugin', ->
     Z.fn 'count', ->
     Z.count.should.be.ok

@@ -1,10 +1,16 @@
 global.Z = require '../../src/zimple'
-require './map'
 
 sinon  = require 'sinon'
 assert = require 'assert'
 
+require './map'
+
+plugins = Z::__plugins
+
 describe 'map plugin', ->
+  afterEach -> Z::__plugins = {}
+  beforeEach -> Z::__plugins = plugins
+
   it 'should exist', ->
     Z.map.should.be.ok
 

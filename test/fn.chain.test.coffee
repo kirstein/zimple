@@ -1,6 +1,10 @@
 Z = require '../src/zimple'
 
+plugins = Z::__plugins
+
 describe 'zimple #fn chaining', ->
+  afterEach -> Z::__plugins = plugins
+
   it 'should allow logical linking of plugins', ->
     Z.fn 'reduce', (arr, fn) -> arr.reduce fn
     Z.fn 'summarize', (a, b) -> a + b

@@ -1,11 +1,19 @@
 global.Z = require '../../src/zimple'
-require './chain'
 
 sinon  = require 'sinon'
 assert = require 'assert'
 
+# Require the actual chain plugin
+require './chain'
+
+# Cache the other plugins
+# We use these the reload the test cenario
+plugins = Z::__plugins
 
 describe 'chain plugin', ->
+
+  afterEach  -> Z::__plugins = {}
+  beforeEach -> Z::__plugins = plugins
 
   it 'should be defined', ->
     Z.chain.should.be.ok

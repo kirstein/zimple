@@ -1,7 +1,12 @@
 global.Z = require '../../src/zimple'
 require './pluck'
 
+plugins = Z::__plugins
+
 describe 'pluck plugin', ->
+  afterEach  -> Z::__plugins = {}
+  beforeEach -> Z::__plugins = plugins
+
   it 'should exist', ->
     Z.pluck.should.be.ok
     Z().pluck.should.be.ok
