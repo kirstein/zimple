@@ -6,42 +6,42 @@ describe 'zimple #fn chaining', ->
   afterEach -> Z::__plugins = plugins
 
   it 'should allow logical linking of plugins', ->
-    Z.fn 'reduce', (arr, fn) -> arr.reduce fn
-    Z.fn 'summarize', (a, b) -> a + b
-    Z.fn 'sum',    (arr) -> Z.reduce arr, Z.summarize
+    Z.fn 'fn_reduce', (arr, fn) -> arr.reduce fn
+    Z.fn 'fn_summarize', (a, b) -> a + b
+    Z.fn 'fn_sum',    (arr) -> Z.fn_reduce arr, Z.fn_summarize
 
-    Z([2,5,6]).sum().should.eql 13
-    Z.sum([2,5,6]).should.eql 13
+    Z([2,5,6]).fn_sum().should.eql 13
+    Z.fn_sum([2,5,6]).should.eql 13
 
   it 'should allow logical linking of plugins (using reference)', ->
-    Z.fn 'reduce', (arr, fn) -> arr.reduce fn
-    Z.fn 'summarize', (a, b) -> a + b
-    Z.fn 'sum', (arr) -> Z.reduce arr, Z.summarize
+    Z.fn 'fn_reduce', (arr, fn) -> arr.reduce fn
+    Z.fn 'fn_summarize', (a, b) -> a + b
+    Z.fn 'fn_sum', (arr) -> Z.fn_reduce arr, Z.fn_summarize
 
-    sum = Z([2,5,6]).sum
-    sum().should.eql 13
+    fn_sum = Z([2,5,6]).fn_sum
+    fn_sum().should.eql 13
 
-    sum = Z.sum
-    sum([2,5,6]).should.eql 13
+    fn_sum = Z.fn_sum
+    fn_sum([2,5,6]).should.eql 13
 
   it 'should allow logical linking of plugins (with this)', ->
-    Z.fn 'reduce', (arr, fn) -> arr.reduce fn
-    Z.fn 'summarize', (a, b) -> a + b
-    Z.fn 'sum',    (arr) -> @reduce arr, @summarize
+    Z.fn 'fn_reduce', (arr, fn) -> arr.reduce fn
+    Z.fn 'fn_summarize', (a, b) -> a + b
+    Z.fn 'fn_sum',    (arr) -> @fn_reduce arr, @fn_summarize
 
-    Z([2,5,6]).sum().should.eql 13
-    Z.sum([2,5,6]).should.eql 13
+    Z([2,5,6]).fn_sum().should.eql 13
+    Z.fn_sum([2,5,6]).should.eql 13
 
   it 'should allow logical linking of plugins (using reference)', ->
-    Z.fn 'reduce', (arr, fn) -> arr.reduce fn
-    Z.fn 'summarize', (a, b) -> a + b
-    Z.fn 'sum', (arr) -> @reduce arr, @summarize
+    Z.fn 'fn_reduce', (arr, fn) -> arr.reduce fn
+    Z.fn 'fn_summarize', (a, b) -> a + b
+    Z.fn 'fn_sum', (arr) -> @fn_reduce arr, @fn_summarize
 
-    sum = Z([2,5,6]).sum
-    sum().should.eql 13
+    fn_sum = Z([2,5,6]).fn_sum
+    fn_sum().should.eql 13
 
-    sum = Z.sum
-    sum([2,5,6]).should.eql 13
+    fn_sum = Z.fn_sum
+    fn_sum([2,5,6]).should.eql 13
 
   it 'should not mutate original context when chaining', ->
     org = [ 1,2,3 ]
