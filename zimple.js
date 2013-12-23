@@ -250,4 +250,19 @@ Z.fn('pluck', function(target, property) {
   }
 });
 
+(function() {
+  return Z.fn('reduce', function(arr, cb, result) {
+    var i, start, _i, _ref;
+    start = 0;
+    if (result == null) {
+      start = 1;
+      result = arr[0];
+    }
+    for (i = _i = start, _ref = arr.length - 1; start <= _ref ? _i <= _ref : _i >= _ref; i = start <= _ref ? ++_i : --_i) {
+      result = cb(result, arr[i]);
+    }
+    return result;
+  });
+})();
+
 })(this);
