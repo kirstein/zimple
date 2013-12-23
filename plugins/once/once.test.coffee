@@ -1,15 +1,10 @@
 global.Z = require '../../src/zimple'
 require './once'
 
-sinon  = require 'sinon'
 assert = require 'assert'
-
-plugins = Z::__plugins
+sinon  = require 'sinon'
 
 describe 'once plugin', ->
-  afterEach  -> Z::__plugins = {}
-  beforeEach -> Z::__plugins = plugins
-
   it 'should be defined', ->
     Z.once.should.be.ok
 
@@ -70,16 +65,16 @@ describe 'once plugin', ->
 
   it 'should be used in other plugins', ->
     spy = sinon.spy()
-    Z.fn 'incTimes', (count, spy) ->
+    Z.fn 'once_inctimes', (count, spy) ->
       once = this.once(spy)
       once i for i in [0..count]
-    Z.incTimes(10, spy)
+    Z.once_inctimes(10, spy)
     spy.callCount.should.eql 1
 
   it 'should be used in other plugins (wrapper)', ->
     spy = sinon.spy()
-    Z.fn 'incTimes', (count, spy) ->
+    Z.fn 'once_inctimes', (count, spy) ->
       once = this.once(spy)
       once i for i in [0..count]
-    Z(10).incTimes(spy)
+    Z(10).once_inctimes(spy)
     spy.callCount.should.eql 1

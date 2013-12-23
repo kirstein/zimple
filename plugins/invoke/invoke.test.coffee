@@ -4,12 +4,7 @@ require './invoke'
 sinon  = require 'sinon'
 assert = require 'assert'
 
-plugins = Z::__plugins
-
 describe 'invoke plugin', ->
-
-  afterEach  -> Z::__plugins = {}
-  beforeEach -> Z::__plugins = plugins
 
   it 'should exist', ->
     Z.invoke.should.be.ok
@@ -51,5 +46,3 @@ describe 'invoke plugin', ->
   it 'should work with strings', ->
     Z(['one', 'two']).invoke('split')
     Z.invoke(['one', 'two'], 'split')
-
-

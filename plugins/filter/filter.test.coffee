@@ -4,12 +4,7 @@ require './filter'
 sinon  = require 'sinon'
 assert = require 'assert'
 
-plugins = Z::__plugins
-
 describe 'filter plugin', ->
-  afterEach  -> Z::__plugins = {}
-  beforeEach -> Z::__plugins = plugins
-
   it 'should exist', -> Z.filter.should.be.ok
   it 'should call the predicate on each array member', ->
     spy = sinon.spy()

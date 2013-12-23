@@ -5,12 +5,7 @@ assert = require 'assert'
 
 require './map'
 
-plugins = Z::__plugins
-
 describe 'map plugin', ->
-  afterEach -> Z::__plugins = {}
-  beforeEach -> Z::__plugins = plugins
-
   it 'should exist', ->
     Z.map.should.be.ok
 
@@ -48,6 +43,6 @@ describe 'map plugin', ->
 
   it 'should work in plugins', ->
     double = (val) -> val*2
-    Z.fn 'test', (arr) -> this.map arr, double
-    Z([1,2,5,6]).test().should.eql [2,4,10,12]
-    Z.test([1,2,5,6]).should.eql [2,4,10,12]
+    Z.fn 'map_test', (arr) -> this.map arr, double
+    Z([1,2,5,6]).map_test().should.eql [2,4,10,12]
+    Z.map_test([1,2,5,6]).should.eql [2,4,10,12]

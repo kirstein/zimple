@@ -2,12 +2,8 @@ global.Z = require '../../src/zimple'
 require './curry'
 
 assert = require 'assert'
-plugins = Z::__plugins
 
 describe 'curry plugin', ->
-  afterEach  -> Z::__plugins = {}
-  beforeEach -> Z::__plugins = plugins
-
   it 'should be defined', ->
     Z.curry.should.be.ok
     Z().curry.should.be.ok
@@ -91,16 +87,16 @@ describe 'curry plugin', ->
     Z(calc).curry()(1)(2, 3).should.eql 6
 
   it 'should work with Z plugins', ->
-    Z.fn 'sum',    (x, y) -> x * y
-    Z.fn 'double', (arr)  -> arr.map @curry(@sum) 2
+    Z.fn 'curry_sum',    (x, y) -> x * y
+    Z.fn 'curry_double', (arr)  -> arr.map @curry(@curry_sum) 2
 
-    Z([2, 4]).double().should.eql [4, 8]
-    Z.double([2, 4]).should.eql [4, 8]
+    Z([2, 4]).curry_double().should.eql [4, 8]
+    Z.curry_double([2, 4]).should.eql [4, 8]
 
   it 'should work with Z plugins in chain', ->
-    Z.fn 'sum',    (x, y) -> x * y
-    Z.fn 'double', (arr)  -> arr.map @curry(@sum) 2
+    Z.fn 'curry_sum',    (x, y) -> x * y
+    Z.fn 'curry_double', (arr)  -> arr.map @curry(@curry_sum) 2
 
-    Z([2, 4]).chain().double().value().should.eql [4, 8]
-    Z.chain([2, 4]).double().value().should.eql [4, 8]
+    Z([2, 4]).chain().curry_double().value().should.eql [4, 8]
+    Z.chain([2, 4]).curry_double().value().should.eql [4, 8]
 
