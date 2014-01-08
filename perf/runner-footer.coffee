@@ -1,11 +1,14 @@
-fs   = require 'fs'
-path = require 'path'
+fs    = require 'fs'
+path  = require 'path'
+spawn = require('child_process').spawn
+
 
 # Expose libraries
 # We are exposing them to global scope to make perfs easier
-global.Z          = require '../src/zimple'
-global.lodash     = require 'lodash'
-global.underscore = require 'underscore'
+libs =
+  lodash     : require 'lodash'
+  underscore : require 'underscore'
+  Bencmark   : require 'benchmark'
 
 # Get options
 opts = require('nomnom').parse()
@@ -24,13 +27,26 @@ readdir = (dir) ->
     if isDir
       readdir fname
     else if regxp.test fname
-      require(fname) runner.suites
+      require(fname) runner.suites,
+                     libs.Bencmark,
+                     libs.Z,
+                     libs.underscore,
+                     libs.lodash
 
-# Initialize dir
-readdir process.cwd()
+## Initialize dir
+#readdir process.cwd()
 
 if typeof document isnt 'undefined'
   window.__runTests = start
 else
   require('microtime')
-  #runner.run()
+  build = spawn('grunt', [ 'build']);
+  build.on 'close', (code) ->
+    if code is 0
+      console.log 'Built Z'
+      libs.Z = require '../lib/src/zimple'
+      readdir process.cwd()
+      runner.run()
+    else
+      console.log 'Failed to build Z'
+

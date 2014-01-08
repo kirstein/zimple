@@ -1,9 +1,8 @@
-Benchmark = require 'benchmark'
-suite     = global.registerSuite new Benchmark.Suite
+module.exports = (suites, Benchmark, Z, underscore, lodash) ->
+  suites.push suite = new Benchmark.Suite
 
-do ->
-  reduceArr = [ 2, 5, 9 ]
-  reduceFn = (a,b) -> a + b
+  reduceArr    = [ 2, 5, 9 ]
+  reduceFn     = (a,b) -> a + b
   reduce_first = 'what-is-this'
 
   # Z performance

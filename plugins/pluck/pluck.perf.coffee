@@ -1,7 +1,7 @@
-Benchmark = require 'benchmark'
-suite     = global.registerSuite new Benchmark.Suite name : 'pluck'
+module.exports = (suites, Benchmark, Z, underscore, lodash) ->
+  suites.push suite = new Benchmark.Suite
 
-do ->
+  # Test data
   key      = 'test'
   pluckArr = [ 2, 5, 9 ]
   pluckObj = asd : 123

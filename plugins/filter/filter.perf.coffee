@@ -1,7 +1,6 @@
-Benchmark = require 'benchmark'
-suite     = global.registerSuite new Benchmark.Suite
+module.exports = (suites, Benchmark, Z, underscore, lodash) ->
+  suites.push suite = new Benchmark.Suite
 
-do ->
   arr     = [ 2, 5, 9 ]
   fn      = (val) -> val % 2
   thisArg = @

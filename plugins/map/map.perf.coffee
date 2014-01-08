@@ -1,8 +1,8 @@
-Benchmark = require 'benchmark'
-suite     = global.registerSuite new Benchmark.Suite
+module.exports = (suites, Benchmark, Z, underscore, lodash) ->
+  suites.push suite = new Benchmark.Suite
 
-do ->
-  mapFn = (val) -> val * 2
+  # Test data
+  mapFn  = (val) -> val * 2
   mapArr = [ 2, 5, 9 ]
 
   # Z performance
