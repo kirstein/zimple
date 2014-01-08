@@ -1,36 +1,36 @@
-do ->
-  opts = require('nomnom').parse()
+fs   = require 'fs'
+path = require 'path'
 
-  # Filters out suite tests that do not match the regexp
-  filter = (obj, regexp) ->
-    obj.filter (test) ->
-      regexp.test test.name
+# Expose libraries
+# We are exposing them to global scope to make perfs easier
+global.Z          = require '../src/zimple'
+global.lodash     = require 'lodash'
+global.underscore = require 'underscore'
 
+# Get options
+opts = require('nomnom').parse()
 
-  cycle    = (event) -> console.log " \u221A #{String event.target}" unless event.target.aborted
-  complete =         -> console.log "\n Suite finished:\n\tFastest is #{this.filter('fastest').pluck('name')}\n"
-  error    = (err)   -> console.log " \u00d7 #{err.target.name}: #{err.target.error}"
+# Start the test runner
+runner = require('./suite') opts
 
-  printStart = (suite) ->
-    tests = suite.pluck 'name'
-    console.log "\nsuite started:"
-    console.log "\t#{tests.join '\n\t'}\n"
+# Get all files
+readdir = (dir) ->
+  regxp = new RegExp /.*\.perf\.coffee/
+  files = fs.readdirSync dir
+  files.forEach (file) ->
+    fname = path.join dir, file
+    stat  = fs.statSync fname
+    isDir = stat.isDirectory()
+    if isDir
+      readdir fname
+    else if regxp.test fname
+      require(fname) runner.suites
 
-  start = ->
-    grepReg = new RegExp opts.grep
-    console.log "Starting performance tests. Grep value is #{opts.grep}"
+# Initialize dir
+readdir process.cwd()
 
-    for suiteObj in __suites
-      suite = filter suiteObj.suite, grepReg
-
-      suite.on 'cycle'    , cycle
-      suite.on 'error'    , error
-      suite.on 'complete' , complete
-
-      printStart suite
-      suite.run suiteObj.options
-
-  if typeof document isnt 'undefined'
-    window.__runTests = start
-  else
-    start()
+if typeof document isnt 'undefined'
+  window.__runTests = start
+else
+  require('microtime')
+  #runner.run()
